@@ -1,44 +1,61 @@
-import { AppBar, Toolbar, Button, Box, Typography } from "@mui/material";
+import { AppBar, Toolbar, Button, Box, IconButton, Drawer, List, ListItem, ListItemText, Typography } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 export default function Navbar() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
+
+  const navLinks = [
+    { name: "Inventory", path: "/" },
+    { name: "Add Item", path: "/add-item" },
+    { name: "Sales", path: "/sales" }
+  ];
+
+  const drawer = (
+    <List>
+      {navLinks.map((item) => (
+        <ListItem button component={Link} to={item.path} key={item.name} onClick={handleDrawerToggle}>
+          <ListItemText primary={item.name} />
+        </ListItem>
+      ))}
+    </List>
+  );
+
   return (
     <>
-      <AppBar position="fixed" elevation={2}>
-        <Toolbar sx={{ display: "flex" }}>
-          
-          {/* Left-aligned App Name */}
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: "bold", flexGrow: 1, cursor: "pointer" }}
-            component={Link}
-            to="/"
-            style={{ textDecoration: "none", color: "white" }}
-          >
-            NGT Inventory Manager
+      <AppBar position="fixed">
+        <Toolbar sx={{ justifyContent: "space-between" }}>
+          {/* Brand left aligned */}
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            Inventory Manager
           </Typography>
 
-          {/* Center-aligned Menu */}
-          <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center", gap: 4 }}>
-            <Button component={Link} to="/" sx={{ color: "#fff" }}>
-              Inventory
-            </Button>
-
-            <Button component={Link} to="/add-item" sx={{ color: "#fff" }}>
-              Add Item
-            </Button>
-
-            <Button component={Link} to="/sales" sx={{ color: "#fff" }}>
-              Sales
-            </Button>
+          {/* Desktop menu */}
+          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3 }}>
+            {navLinks.map((item) => (
+              <Button key={item.name} component={Link} to={item.path} sx={{ color: "#fff" }}>
+                {item.name}
+              </Button>
+            ))}
           </Box>
 
-          {/* Right Spacer */}
-          <Box sx={{ width: 80 }} />
+          {/* Mobile menu icon */}
+          <IconButton
+            onClick={handleDrawerToggle}
+            sx={{ display: { xs: "block", md: "none" }, color: "#fff" }}
+          >
+            <MenuIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
 
-      {/* Space below navbar */}
+      {/* Mobile Drawer */}
+      <Drawer anchor="right" open={mobileOpen} onClose={handleDrawerToggle}>
+        {drawer}
+      </Drawer>
+
       <Box sx={{ height: "70px" }}></Box>
     </>
   );
