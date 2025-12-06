@@ -3,17 +3,14 @@ import { Box } from "@mui/material";
 export default function PageContainer({ children }) {
   return (
     <Box
+maxWidth="md"
       sx={{
-        marginTop: "30px",
+        mt: 3,
+        px: { xs: 1.5, sm: 3 }, // responsive side padding
         display: "flex",
         flexDirection: "column",
-        maxWidth: "1200px",
-        margin: "0 auto",
-        padding: "24px",
-        mt: 2, // Ensures consistent gap below navbar
         alignItems: "center",
         textAlign: "center"
-        
       }}
     >
       {children}
