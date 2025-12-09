@@ -1,0 +1,11 @@
+.recent-table-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  box-sizing: border-box;
+}
+
+.MuiDataGrid-root {
+  width: 100% !important;
+  max-width: 100% !important;
+}

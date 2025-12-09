@@ -5,7 +5,9 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+
 import { getProducts, deleteProduct } from "../services/api";
+import PageContainer from "./PageContainer";
 
 export default function InventoryTable() {
   const [products, setProducts] = useState([]);
@@ -33,6 +35,7 @@ if (!window.confirm("Are you sure you want to delete this item?")) return;
   };
 
   return (
+    <PageContainer>
     <Paper sx={{ mt: 4, p: 2 }}>
       <Typography variant="h5" mb={2}>Inventory</Typography>
 
@@ -107,5 +110,6 @@ if (!window.confirm("Are you sure you want to delete this item?")) return;
         </>
       )}
     </Paper>
+    </PageContainer>
   );
 }

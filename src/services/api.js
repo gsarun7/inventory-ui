@@ -10,6 +10,16 @@ export const getCategories = async () => {
   return res.json();
 };
 
+export const getRecentActivity = async () => {
+  const res = await fetch(`${API_URL}/recent-activity`);
+  return res.json();
+};
+
+export const getDashboard = async () => {
+  const res = await fetch(`${API_URL}/dashboard`);
+  return res.json();
+};
+
 export const addProduct = async (data) => {
   const res = await fetch(`${API_URL}/items`, {
     method: "POST",

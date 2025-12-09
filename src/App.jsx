@@ -3,6 +3,9 @@ import Navbar from "./components/Navbar";
 import InventoryTable from "./components/InventoryTable";
 import AddItem from "./components/AddItem";
 import Sales from "./pages/Sales";
+import RecentActivityTable from "./components/RecentActivityTable/RecentActivityTable";
+import Dashboard from "./pages/Dashboard";
+
 
 export default function App() {
   return (
@@ -14,6 +17,8 @@ export default function App() {
           <Route path="/inventory" element={<InventoryTable />} />
           <Route path="/add-item" element={<AddItem />} />
           <Route path="/sales" element={<Sales />} />
+          <Route path="/recent-activity" element={<RecentActivityTable />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
     </BrowserRouter>

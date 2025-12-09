@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getCategories, addProduct } from "../services/api";
+import PageContainer from "./PageContainer";
 import {
   TextField,
   Button,
@@ -50,6 +51,7 @@ export default function AddItem() {
   };
 
   return (
+    <PageContainer>
     <Paper sx={{ p: 4, maxWidth: 400, mx: "auto", mt: 4 }}>
       <Typography variant="h5" mb={2}>Add Item</Typography>
 
@@ -117,5 +119,6 @@ export default function AddItem() {
         Add Product
       </Button>
     </Paper>
+    </PageContainer>
   );
 }

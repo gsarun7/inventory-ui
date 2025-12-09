@@ -1,4 +1,5 @@
-import { AppBar, Toolbar, Button, Box, IconButton, Drawer, List, ListItem, ListItemText, Typography } from "@mui/material";
+import { AppBar, Toolbar, Button, Box, IconButton, Drawer, List, ListItemText, Typography, ListItemButton } from "@mui/material";
+
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -8,17 +9,19 @@ export default function Navbar() {
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   const navLinks = [
-    { name: "Inventory", path: "/" },
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Inventory", path: "/inventory" },
     { name: "Add Item", path: "/add-item" },
-    { name: "Sales", path: "/sales" }
+    { name: "Sales", path: "/sales" },
+    { name: "Recent Activiy", path: "/recent-activity" }
   ];
 
   const drawer = (
     <List>
       {navLinks.map((item) => (
-        <ListItem button component={Link} to={item.path} key={item.name} onClick={handleDrawerToggle}>
-          <ListItemText primary={item.name} />
-        </ListItem>
+      <ListItemButton component={Link} to={item.path} onClick={handleDrawerToggle}>
+  <ListItemText primary={item.name} />
+</ListItemButton>
       ))}
     </List>
   );
