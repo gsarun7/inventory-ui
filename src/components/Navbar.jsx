@@ -33,7 +33,7 @@ export default function Navbar() {
         <Toolbar sx={{ justifyContent: "space-between" }}>
           {/* Brand left aligned */}
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            Inventory Manager
+            NITTUR GRANITE & TILES 
           </Typography>
 
           {/* Desktop menu */}
