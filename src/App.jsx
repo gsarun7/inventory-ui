@@ -14,7 +14,7 @@ export default function App() {
       <Navbar />
       <div style={{ padding: "20px" }}>
         <Routes>
-          <Route path="/" element={<InventoryTable />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/inventory" element={<InventoryTable />} />
           <Route path="/add-item" element={<AddItem />} />
           <Route path="/sales" element={<Sales />} />
