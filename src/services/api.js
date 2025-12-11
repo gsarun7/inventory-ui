@@ -15,6 +15,11 @@ export const getRecentActivity = async () => {
   return res.json();
 };
 
+export const getInvoice = async () => {
+  const res = await fetch(`${API_URL}/invoice`);
+  return res.json();
+};
+
 export const getDashboard = async () => {
   const res = await fetch(`${API_URL}/dashboard`);
   return res.json();

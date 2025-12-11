@@ -1,0 +1,49 @@
+/* Container used for screen preview and print */
+.invoice-container {
+  width: 210mm;           /* A4 width */
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 10mm;
+  box-sizing: border-box;
+  background: #fff;
+  font-family: "Arial", sans-serif;
+  font-size: 13px;
+}
+
+/* Print-area wrapper the page uses */
+.print-area {
+  display: block;
+}
+
+/* When printing - hide everything except .invoice-print */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .invoice-print, .invoice-print * {
+    visibility: visible;
+  }
+  .invoice-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  /* Remove shadows/borders that break print look */
+  .paper, .MuiPaper-root {
+    box-shadow: none !important;
+  }
+
+  /* Remove margins from body in print */
+  body {
+    margin: 0;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+/* Small helper styles used in components */
+.items-table th,
+.items-table td {
+  border: 1px solid #000;
+}

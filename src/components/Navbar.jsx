@@ -13,7 +13,8 @@ export default function Navbar() {
     { name: "Inventory", path: "/inventory" },
     { name: "Add Item", path: "/add-item" },
     { name: "Sales", path: "/sales" },
-    { name: "Recent Activiy", path: "/recent-activity" }
+    { name: "Recent Activiy", path: "/recent-activity" },
+    { name: "Invoice", path: "/invoice" }
   ];
 
   const drawer = (

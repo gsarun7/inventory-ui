@@ -5,6 +5,7 @@ import AddItem from "./components/AddItem";
 import Sales from "./pages/Sales";
 import RecentActivityTable from "./components/RecentActivityTable/RecentActivityTable";
 import Dashboard from "./pages/Dashboard";
+import InvoicePage from "./pages/InvoicePage";
 
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="/sales" element={<Sales />} />
           <Route path="/recent-activity" element={<RecentActivityTable />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/invoice" element={<InvoicePage />} />
         </Routes>
       </div>
     </BrowserRouter>
