@@ -15,31 +15,70 @@ export default function InvoicePreview({ data }) {
         Tax Invoice
       </Typography>
 
-      <Grid container sx={{ border: "1px solid #000", p: 1 }}>
-        <Grid item xs={8}>
-          <Typography sx={{ fontWeight: "bold" }}>{data.supplierName}</Typography>
-          <Typography>{data.supplierAddress}</Typography>
+      <Grid container
+        sx={{
+          borderLeft: "1px solid #000",
+          borderRight: "1px solid #000",
+          borderTop: "1px solid #000",
+          borderBottom: "1px solid #000",
+          boxSizing: "border-box"
+        }}>
+        <Grid item xs={8} sx={{ textAlign: "left",p: 1 }}>
+          <Typography sx={{ fontWeight: "bold", fontSize: "0.9rem", wordWrap: "break-word" }}>{data.supplierName}</Typography>
+          <Typography sx={{ fontSize: "0.9rem", wordWrap: "break-word" }}>{data.supplierAddress}</Typography>
         </Grid>
 
-        <Grid item xs={4} sx={{ textAlign: "right" }}>
+        <Grid item xs={4} sx={{ textAlign: "left", borderLeft: '1px solid #000', p: 1}}>
           <div>Invoice No: <b>{data.invoiceNo}</b></div>
+          <div>e-Way Bill No: <b>{data.invoiceNo}</b></div>
           <div>Dated: <b>{data.invoiceDate}</b></div>
           <div>Mode / Terms: <b>{data.paymentMode}</b></div>
+
+        </Grid>
+        <Grid item xs={4} sx={{ textAlign: "left", borderLeft: '1px solid #000', p: 1 }}>
+          <div>Delivery Note: <b>{data.invoiceNo}</b></div>
+          <div>Supplier ref: <b>{data.invoiceDate}</b></div>
+          <div>Buyer's order No: <b>{data.paymentMode}</b></div>
         </Grid>
       </Grid>
 
       {/* consignee / buyer */}
-      <Grid container sx={{ borderLeft: "1px solid #000", borderRight: "1px solid #000", borderBottom: "1px solid #000", p: 1 }}>
-        <Grid item xs={6}>
+      <Grid container
+        sx={{
+          borderLeft: "1px solid #000",
+          borderRight: "1px solid #000",
+          borderBottom: "1px solid #000",
+          boxSizing: "border-box"
+        }}>
+        <Grid
+          item
+          xs={6}
+          sx={{
+            borderRight: "1px solid #000",
+            p: 1,
+            boxSizing: "border-box"
+          }}
+        >
           <Typography sx={{ fontWeight: "bold" }}>Consignee</Typography>
           <Typography>{data.consigneeName}</Typography>
           <Typography>{data.consigneeAddress}</Typography>
         </Grid>
-        <Grid item xs={6}>
-          <Typography sx={{ fontWeight: "bold" }}>Buyer (if other than consignee)</Typography>
+
+        <Grid
+          item
+          xs={6}
+          sx={{
+            p: 1,
+            boxSizing: "border-box"
+          }}
+        >
+          <Typography sx={{ fontWeight: "bold" }}>
+            Buyer (if other than consignee)
+          </Typography>
           <Typography>{data.buyerName}</Typography>
           <Typography>{data.buyerAddress}</Typography>
         </Grid>
+
       </Grid>
 
       {/* items table */}
@@ -47,10 +86,12 @@ export default function InvoicePreview({ data }) {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: "bold", width: "46%" }}>Description of Goods</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>HSN/SAC</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Quantity</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Rate</TableCell>
+              <TableCell sx={{ fontWeight: "bold", borderRight: '1px solid #000' }}>Sl</TableCell>
+              <TableCell sx={{ fontWeight: "bold", width: "46%",borderRight: '1px solid #000' }}>Description of Goods</TableCell>
+              <TableCell sx={{ fontWeight: "bold", borderRight: '1px solid #000' }}>HSN/SAC</TableCell>
+              <TableCell sx={{ fontWeight: "bold", borderRight: '1px solid #000' }}>Quantity</TableCell>
+              <TableCell sx={{ fontWeight: "bold", borderRight: '1px solid #000' }}>Rate</TableCell>
+              <TableCell sx={{ fontWeight: "bold", borderRight: '1px solid #000' }}>per</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Amount</TableCell>
             </TableRow>
           </TableHead>
@@ -58,10 +99,12 @@ export default function InvoicePreview({ data }) {
           <TableBody>
             {data.items.map((it, i) => (
               <TableRow key={i}>
-                <TableCell>{it.name || "\u00A0"}</TableCell>
-                <TableCell>{it.hsn || "\u00A0"}</TableCell>
-                <TableCell>{it.qty || "\u00A0"}</TableCell>
-                <TableCell>{it.rate || "\u00A0"}</TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}>{i+1}</TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}>{it.name || "\u00A0"}</TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}>{it.hsn || "\u00A0"}</TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}>{it.qty || "\u00A0"}</TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}>{it.rate || "\u00A0"}</TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}>{it.per || "\u00A0"}</TableCell>
                 <TableCell>{it.amount || "\u00A0"}</TableCell>
               </TableRow>
             ))}
@@ -69,10 +112,12 @@ export default function InvoicePreview({ data }) {
             {/* blank rows to reach consistent print height */}
             {Array.from({ length: Math.max(0, blankRows - data.items.length) }).map((_, i) => (
               <TableRow key={`blank-${i}`}>
-                <TableCell>&nbsp;</TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}>&nbsp;</TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}></TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}></TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}></TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}></TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}></TableCell>
                 <TableCell></TableCell>
               </TableRow>
             ))}
@@ -82,7 +127,7 @@ export default function InvoicePreview({ data }) {
 
       {/* totals */}
       <Grid container sx={{ border: "1px solid #000", borderTop: "none", mt: 0 }}>
-        <Grid item xs={9} sx={{ p: 1 }}>
+        <Grid item xs={9} sx={{ p: 1, borderRight: "1px solid #000" }}>
           <Typography>Amount Chargeable (in words):</Typography>
           <Typography sx={{ fontWeight: "bold" }}>{data.amountInWords}</Typography>
         </Grid>
@@ -96,7 +141,7 @@ export default function InvoicePreview({ data }) {
 
       {/* footer */}
       <Grid container sx={{ border: "1px solid #000", borderTop: "none", mt: 0, p: 1 }}>
-        <Grid item xs={6}>
+        <Grid item xs={6} >
           <Typography sx={{ fontWeight: "bold" }}>Declaration</Typography>
           <Typography>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</Typography>
         </Grid>

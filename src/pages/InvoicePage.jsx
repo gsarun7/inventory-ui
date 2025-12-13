@@ -19,7 +19,7 @@ export default function InvoicePage() {
     gstPercent: 18,
     items: [
       // initial one row
-      { name: "", hsn: "", qty: "", rate: "", amount: "" },
+      { name: "", hsn: "", qty: "", rate: "", per: "", amount: "" },
     ],
     subtotal: "0.00",
     gstAmount: "0.00",
@@ -64,7 +64,7 @@ export default function InvoicePage() {
   };
 
   const addItem = () =>
-    setForm((p) => ({ ...p, items: [...p.items, { name: "", hsn: "", qty: "", rate: "", amount: "" }] }));
+    setForm((p) => ({ ...p, items: [...p.items, { name: "", hsn: "", qty: "", rate: "", per: "", amount: "" }] }));
 
   const removeItem = (index) => {
     const newItems = [...form.items];

@@ -114,11 +114,13 @@ export default function InvoiceForm({
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Description</TableCell>
-              <TableCell>HSN/SAC</TableCell>
-              <TableCell>Qty</TableCell>
-              <TableCell>Rate</TableCell>
-              <TableCell>Amount</TableCell>
+              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Sr</TableCell>
+              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Description of Goods</TableCell>
+              <TableCell sx={{ borderRight: '1px solid #ddd' }}>HSN/SAC</TableCell>
+              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Quantity</TableCell>
+              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Rate</TableCell>
+              <TableCell sx={{ borderRight: '1px solid #ddd' }}>per</TableCell>
+              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Amount</TableCell>
               <TableCell />
             </TableRow>
           </TableHead>
@@ -126,30 +128,34 @@ export default function InvoiceForm({
           <TableBody>
             {form.items.map((item, idx) => (
               <TableRow key={idx}>
-                <TableCell style={{ minWidth: 220 }}>
+                <TableCell sx={{ borderRight: '1px solid #ddd' }}>{idx + 1}</TableCell>
+                <TableCell style={{ minWidth: 220 }} sx={{ borderRight: '1px solid #ddd' }}>
                   <Autocomplete
                     options={productList}
                     getOptionLabel={(opt) => opt.name}
+                    freeSolo
                     size="small"
-                    onChange={(e, val) => {
-                      if (val) {
+                    onChange={(e, val, reason) => {
+                      if (reason === 'selectOption' && val && typeof val === 'object') {
+                        // Selected from dropdown - populate all fields
                         updateItem(idx, "name", val.name);
                         updateItem(idx, "hsn", val.hsn);
-                        updateItem(idx, "rate", val.rate);
+                        updateItem(idx, "rate", val.rate.toString());
+                      } else if (reason === 'createOption' || reason === 'clear') {
+                        // User typed or cleared - just update name
+                        updateItem(idx, "name", val || "");
                       }
                     }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        value={item.name}
-                        onChange={(e) => updateItem(idx, "name", e.target.value)}
                         placeholder="Select / Type product"
                       />
                     )}
                   />
                 </TableCell>
 
-                <TableCell>
+                <TableCell sx={{ borderRight: '1px solid #ddd' }}>
                   <TextField
                     size="small"
                     value={item.hsn}
@@ -157,7 +163,7 @@ export default function InvoiceForm({
                   />
                 </TableCell>
 
-                <TableCell>
+                <TableCell sx={{ borderRight: '1px solid #ddd' }}>
                   <TextField
                     size="small"
                     type="number"
@@ -165,8 +171,7 @@ export default function InvoiceForm({
                     onChange={(e) => updateItem(idx, "qty", e.target.value)}
                   />
                 </TableCell>
-
-                <TableCell>
+                              <TableCell sx={{ borderRight: '1px solid #ddd' }}>
                   <TextField
                     size="small"
                     type="number"
@@ -174,8 +179,15 @@ export default function InvoiceForm({
                     onChange={(e) => updateItem(idx, "rate", e.target.value)}
                   />
                 </TableCell>
-
-                <TableCell>
+                <TableCell sx={{ borderRight: '1px solid #ddd' }}>
+                  <TextField
+                    size="small"
+                    value={item.per}
+                    onChange={(e) => updateItem(idx, "per", e.target.value)}
+                   
+                  />
+                </TableCell>
+                <TableCell sx={{ borderRight: '1px solid #ddd' }}>
                   <TextField size="small" value={item.amount} disabled />
                 </TableCell>
 
