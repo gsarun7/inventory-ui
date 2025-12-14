@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Paper, Grid, Typography, Table, TableHead, TableRow, TableCell, TableBody, Box } from "@mui/material";
 
 /**
@@ -15,79 +16,130 @@ export default function InvoicePreview({ data }) {
         Tax Invoice
       </Typography>
 
-      <Grid container
-        sx={{
-          borderLeft: "1px solid #000",
-          borderRight: "1px solid #000",
-          borderTop: "1px solid #000",
-          borderBottom: "1px solid #000",
-          boxSizing: "border-box"
-        }}>
-        <Grid item xs={8} sx={{ textAlign: "left",p: 1 }}>
-          <Typography sx={{ fontWeight: "bold", fontSize: "0.9rem", wordWrap: "break-word" }}>{data.supplierName}</Typography>
-          <Typography sx={{ fontSize: "0.9rem", wordWrap: "break-word" }}>{data.supplierAddress}</Typography>
+      {/* Main content container */}
+      <Box sx={{ border: "1px solid #000" }}>
+        {/* Header section - Supplier & Invoice Details */}
+        <Grid container sx={{ borderBottom: "1px solid #000" }}>
+          <Grid item xs={12} sx={{ width: '60%', p: 1, borderRight: "1px solid #000" }}>
+            <Typography sx={{ fontWeight: "bold", fontSize: "0.9rem", wordWrap: "break-word" }}>{data.supplierName}</Typography>
+            <Typography sx={{ fontSize: "0.9rem", wordWrap: "break-word", whiteSpace: "normal" }}>{data.supplierAddress}</Typography>
+          </Grid>
+
+          <Grid item xs={12} sx={{ width: '20%', p: 1, borderRight: "1px solid #000" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Invoice No:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold",fontSize: "0.75rem" }}>{data.invoiceNo}</Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>e-Way Bill No:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold",fontSize: "0.75rem" }}></Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Delivery Note:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold",fontSize: "0.75rem" }}></Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Supplier ref:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold",fontSize: "0.75rem"}}></Typography>
+              </Box>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} sx={{ width: '20%', p: 1 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Dated:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" ,fontSize: "0.75rem"}}>{data.invoiceDate}</Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Mode/Terms of Payment:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" ,fontSize: "0.75rem"}}>{data.paymentMode}</Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Delivery Date:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" ,fontSize: "0.75rem"}}></Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Other Reference(s):</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold",fontSize: "0.75rem" }}></Typography>
+              </Box>
+            </Box>
+          </Grid>
         </Grid>
 
-        <Grid item xs={4} sx={{ textAlign: "left", borderLeft: '1px solid #000', p: 1}}>
-          <div>Invoice No: <b>{data.invoiceNo}</b></div>
-          <div>e-Way Bill No: <b>{data.invoiceNo}</b></div>
-          <div>Dated: <b>{data.invoiceDate}</b></div>
-          <div>Mode / Terms: <b>{data.paymentMode}</b></div>
+        {/* Consignee section */}
+        <Grid container sx={{ borderBottom: "1px solid #000" }}>
+          <Grid item xs={12} sx={{ width: '60%', p: 1, borderRight: "1px solid #000" }}>
+            <Typography sx={{ fontWeight: "bold" }}>Consignee</Typography>
+            <Typography>{data.consigneeName}</Typography>
+            <Typography>{data.consigneeAddress}</Typography>
+          </Grid>
 
-        </Grid>
-        <Grid item xs={4} sx={{ textAlign: "left", borderLeft: '1px solid #000', p: 1 }}>
-          <div>Delivery Note: <b>{data.invoiceNo}</b></div>
-          <div>Supplier ref: <b>{data.invoiceDate}</b></div>
-          <div>Buyer's order No: <b>{data.paymentMode}</b></div>
-        </Grid>
-      </Grid>
+          <Grid item xs={12} sx={{ width: '20%', p: 1, borderRight: "1px solid #000" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Buyer's order No:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" ,fontSize: "0.75rem"}}></Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Despatch Document No.:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold",fontSize: "0.75rem" }}></Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Despatched through:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" ,fontSize: "0.75rem"}}></Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Bill of Lading/LR-RR No.:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" ,fontSize: "0.75rem"}}></Typography>
+              </Box>
+            </Box>
+          </Grid>
 
-      {/* consignee / buyer */}
-      <Grid container
-        sx={{
-          borderLeft: "1px solid #000",
-          borderRight: "1px solid #000",
-          borderBottom: "1px solid #000",
-          boxSizing: "border-box"
-        }}>
-        <Grid
-          item
-          xs={6}
-          sx={{
-            borderRight: "1px solid #000",
-            p: 1,
-            boxSizing: "border-box"
-          }}
-        >
-          <Typography sx={{ fontWeight: "bold" }}>Consignee</Typography>
-          <Typography>{data.consigneeName}</Typography>
-          <Typography>{data.consigneeAddress}</Typography>
-        </Grid>
-
-        <Grid
-          item
-          xs={6}
-          sx={{
-            p: 1,
-            boxSizing: "border-box"
-          }}
-        >
-          <Typography sx={{ fontWeight: "bold" }}>
-            Buyer (if other than consignee)
-          </Typography>
-          <Typography>{data.buyerName}</Typography>
-          <Typography>{data.buyerAddress}</Typography>
+          <Grid item xs={12} sx={{ width: '20%', p: 1 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Buyer's order No Dated:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" ,fontSize: "0.75rem"}}></Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Destination:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" ,fontSize: "0.75rem"}}>Tarikere</Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Motor Vehicle No:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" ,fontSize: "0.75rem"}}>KA 14 C 8935</Typography>
+              </Box>
+            </Box>
+          </Grid>
         </Grid>
 
-      </Grid>
+        {/* Buyer section */}
+        <Grid container sx={{ borderBottom: "1px solid #000" }}>
+          <Grid item xs={12} sx={{ width: '60%', p: 1, borderRight: "1px solid #000" }}>
+            <Typography sx={{ fontWeight: "bold" }}>
+              Buyer (if other than consignee)
+            </Typography>
+            <Typography>{data.buyerName}</Typography>
+            <Typography>{data.buyerAddress}</Typography>
+          </Grid>
 
+          <Grid item xs={12} sx={{ width: '40%', p: 1 }}>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Terms of Delivery:</Typography>
+              <Typography variant="body2" sx={{ fontWeight: "bold" ,fontSize: "0.75rem"}}>No returns after 15 days</Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
       {/* items table */}
       <Box sx={{ borderLeft: "1px solid #000", borderRight: "1px solid #000", borderBottom: "1px solid #000" }}>
         <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: "bold", borderRight: '1px solid #000' }}>Sl</TableCell>
-              <TableCell sx={{ fontWeight: "bold", width: "46%",borderRight: '1px solid #000' }}>Description of Goods</TableCell>
+              <TableCell sx={{ fontWeight: "bold", width: "46%", borderRight: '1px solid #000' }}>Description of Goods</TableCell>
               <TableCell sx={{ fontWeight: "bold", borderRight: '1px solid #000' }}>HSN/SAC</TableCell>
               <TableCell sx={{ fontWeight: "bold", borderRight: '1px solid #000' }}>Quantity</TableCell>
               <TableCell sx={{ fontWeight: "bold", borderRight: '1px solid #000' }}>Rate</TableCell>
@@ -99,7 +151,7 @@ export default function InvoicePreview({ data }) {
           <TableBody>
             {data.items.map((it, i) => (
               <TableRow key={i}>
-                <TableCell sx={{ borderRight: '1px solid #000' }}>{i+1}</TableCell>
+                <TableCell sx={{ borderRight: '1px solid #000' }}>{i + 1}</TableCell>
                 <TableCell sx={{ borderRight: '1px solid #000' }}>{it.name || "\u00A0"}</TableCell>
                 <TableCell sx={{ borderRight: '1px solid #000' }}>{it.hsn || "\u00A0"}</TableCell>
                 <TableCell sx={{ borderRight: '1px solid #000' }}>{it.qty || "\u00A0"}</TableCell>
@@ -124,7 +176,6 @@ export default function InvoicePreview({ data }) {
           </TableBody>
         </Table>
       </Box>
-
       {/* totals */}
       <Grid container sx={{ border: "1px solid #000", borderTop: "none", mt: 0 }}>
         <Grid item xs={9} sx={{ p: 1, borderRight: "1px solid #000" }}>
@@ -138,26 +189,68 @@ export default function InvoicePreview({ data }) {
           <Typography sx={{ fontWeight: "bold" }}>Grand Total: ₹ {data.grandTotal}</Typography>
         </Grid>
       </Grid>
-
       {/* footer */}
-      <Grid container sx={{ border: "1px solid #000", borderTop: "none", mt: 0, p: 1 }}>
-        <Grid item xs={6} >
+      <Grid container sx={{
+        borderLeft: "1px solid #000",
+        borderRight: "1px solid #000",
+        borderBottom: "1px solid #000",
+        boxSizing: "border-box"
+      }}>
+        <Grid item
+          xs={6}
+        >
           <Typography sx={{ fontWeight: "bold" }}>Declaration</Typography>
-          <Typography>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</Typography>
+          <Typography sx={{ fontSize: "12px" }}>We declare that this invoice shows the actual price of</Typography>
+          <Typography sx={{ fontSize: "12px" }}>the goods described and that all particulars are true and correct.</Typography>
         </Grid>
 
         <Grid item xs={6} sx={{ textAlign: "right" }}>
           <Typography sx={{ fontWeight: "bold" }}>Company Bank Details</Typography>
-          <Typography>Bank: SBI</Typography>
-          <Typography>A/C No: XXXXXX</Typography>
-          <Typography>IFSC: SBIN000XXXX</Typography>
+          <Typography sx={{ fontSize: "12px" }}>Bank: SBI</Typography>
+          <Typography sx={{ fontSize: "12px" }}>A/C No: XXXXXX</Typography>
+          <Typography sx={{ fontSize: "12px" }}>IFSC: SBIN000XXXX</Typography>
+        </Grid>
+      </Grid>
+      <Grid container sx={{
+        borderLeft: "1px solid #000",
+        borderRight: "1px solid #000",
+        borderBottom: "1px solid #000",
+        boxSizing: "border-box"
+      }}>
+        <Grid item xs={6} sx={{
+          borderRight: "1px solid #000",
+          borderRight: "1px solid #000",
+          p: 1,
+          width: "50%",
+          boxSizing: "border-box",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between"
 
+
+
+        }} >
           <Box sx={{ mt: 4 }}>
-            <Typography>Authorised Signatory</Typography>
+            <Typography sx={{ fontSize: "12px" }}>Customer's Seal and Signature</Typography>
+            <Typography></Typography>
+            <Typography></Typography>
+
+          </Box>
+        </Grid>
+        <Grid item xs={6} sx={{
+          p: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between"
+        }}>
+          <Box sx={{ mt: 4 }}>
+            <Typography sx={{ fontSize: "12px" }}>for NITTUR GRANITE & TILES - J D KATTE SHOWROOM</Typography>
+            <Typography></Typography>
+            <Typography></Typography>
+            <Typography sx={{ fontSize: "10px" }}>-Authorised Signatory</Typography>
           </Box>
         </Grid>
       </Grid>
-
       <Typography align="center" sx={{ mt: 1, fontSize: 12 }}>
         SUBJECT TO BHADRAVATI JURISDICTION — This is a Computer Generated Invoice
       </Typography>

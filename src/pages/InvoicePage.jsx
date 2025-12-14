@@ -1,5 +1,8 @@
 import { useRef, useState, useEffect } from "react";
 import { Box, Button, Divider } from "@mui/material";
+import * as XLSX from "xlsx";
+import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun } from "docx";
+import { saveAs } from "file-saver";
 import InvoiceForm from "../components/InvoiceForm/InvoiceForm";
 import InvoicePreview from "../components/InvoiceForm/InvoicePreview";
 import "../styles/invoice.css"; // print styles + layout
@@ -10,6 +13,10 @@ export default function InvoicePage() {
     invoiceNo: "868",
     invoiceDate: new Date().toISOString().slice(0, 10),
     paymentMode: "CASH",
+    ewaybillno: "eway1234567890",
+    destination: "BHADRAVATHI",
+    motorVehicleNo: "KA-03-MN-1234",
+    deleiveryDate: new Date().toISOString().slice(0, 10),
     supplierName: "NITTUR GRANITE & TILES - JD KATTE SHOWROOM",
     supplierAddress: "SY No: XXXX, GKHPS KADADAKATTE, BHADRAVATHI",
     consigneeName: "RAMYA",
@@ -131,6 +138,167 @@ export default function InvoicePage() {
     return str.trim() + " Only";
   }
 
+  const exportToWord = async (data) => {
+    const doc = new Document({
+      sections: [
+        {
+          children: [
+            new Paragraph({
+              alignment: "center",
+              children: [new TextRun({ text: "TAX INVOICE", bold: true, size: 28 })],
+            }),
+
+            new Paragraph(""),
+
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Supplier: ", bold: true }),
+                new TextRun(data.supplierName),
+              ],
+            }),
+
+            new Paragraph(data.supplierAddress),
+            new Paragraph(""),
+
+            new Paragraph(`Invoice No: ${data.invoiceNo}`),
+            new Paragraph(`Date: ${data.invoiceDate}`),
+            new Paragraph(""),
+
+            new Table({
+              width: { size: 100, type: "pct" },
+              rows: [
+                new TableRow({
+                  children: [
+                    "SL",
+                    "Description",
+                    "HSN",
+                    "Qty",
+                    "Rate",
+                    "Amount",
+                  ].map(
+                    (h) =>
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [new TextRun({ text: h, bold: true })],
+                          }),
+                        ],
+                      })
+                  ),
+                }),
+
+                ...data.items.map(
+                  (it, i) =>
+                    new TableRow({
+                      children: [
+                        i + 1,
+                        it.name,
+                        it.hsn,
+                        it.qty,
+                        it.rate,
+                        it.amount,
+                      ].map(
+                        (v) =>
+                          new TableCell({
+                            children: [new Paragraph(String(v ?? ""))],
+                          })
+                      ),
+                    })
+                ),
+              ],
+            }),
+
+            new Paragraph(""),
+            new Paragraph(`Subtotal: ₹ ${data.subtotal}`),
+            new Paragraph(`GST: ₹ ${data.gstAmount}`),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `Grand Total: ₹ ${data.grandTotal}`, bold: true }),
+              ],
+            }),
+
+            new Paragraph(""),
+            new Paragraph({
+              alignment: "right",
+              children: [new TextRun("Authorised Signatory")],
+            }),
+          ],
+        },
+      ],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, `Invoice_${data.invoiceNo}.docx`);
+  };
+  // const exportToExcel = () => {
+  //   const rows = form.items.map((item, index) => ({
+  //     "Sl No": index + 1,
+  //     "Description": item.name,
+  //     "HSN/SAC": item.hsn,
+  //     "Quantity": item.qty,
+  //     "Rate": item.rate,
+  //     "Per": item.per,
+  //     "Amount": item.amount
+  //   }));
+
+  //   const worksheet = XLSX.utils.json_to_sheet(rows);
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Invoice");
+
+  //   XLSX.writeFile(workbook, `Invoice_${form.invoiceNo}.xlsx`);
+  //   window.alert("Excel exported successfully.");
+
+  // };
+
+
+
+
+  const exportToExcel = () => {
+    const wsData = [
+      ["TAX INVOICE"],
+      [],
+      ["Supplier", form.supplierName],
+      ["Address", form.supplierAddress],
+      [],
+      ["Invoice No", form.invoiceNo, "", "Date", form.invoiceDate],
+      [],
+      ["Consignee", form.consigneeName],
+      ["Address", form.consigneeAddress],
+      [],
+      ["SL", "Description", "HSN", "Qty", "Rate", "Amount"],
+      ...form.items.map((it, i) => [
+        i + 1,
+        it.name,
+        it.hsn,
+        it.qty,
+        it.rate,
+        it.amount
+      ]),
+      [],
+      ["Subtotal", form.subtotal],
+      ["GST", form.gstAmount],
+      ["Grand Total", form.grandTotal]
+    ];
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // column widths (Description wider)
+    ws["!cols"] = [
+      { wch: 5 },
+      { wch: 40 },
+      { wch: 10 },
+      { wch: 8 },
+      { wch: 10 },
+      { wch: 12 }
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Invoice");
+
+    XLSX.writeFile(wb, `Invoice_${form.invoiceNo}.xlsx`);
+  };
+
+
   // Print: we use print CSS to only show preview area
   const handlePrint = () => {
     window.print();
@@ -161,6 +329,16 @@ export default function InvoicePage() {
         </Button>
         <Button variant="contained" onClick={handlePrint}>
           Print / Save as PDF
+        </Button>
+        <Button
+          variant="contained"
+          color="success"
+          onClick={exportToExcel}
+        >
+          Export Excel
+        </Button>
+        <Button variant="outlined" onClick={() => exportToWord(form)}>
+          Export Word
         </Button>
       </Box>
     </Box>

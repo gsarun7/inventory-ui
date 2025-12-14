@@ -1,0 +1,46 @@
+/* invoice.css */
+.invoice-a4 {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 10mm;
+  margin: auto;
+  background: white;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+
+.invoice-border {
+  border: 1px solid #000;
+}
+
+.invoice-grid-3 {
+  display: grid;
+  grid-template-columns: 60% 20% 20%;
+}
+
+.invoice-grid-2 {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
+.cell {
+  padding: 4px;
+  border-right: 1px solid #000;
+}
+
+.cell:last-child {
+  border-right: none;
+}
+
+@media print {
+  body {
+    margin: 0;
+  }
+
+  .invoice-a4 {
+    margin: 0;
+    box-shadow: none;
+    page-break-after: always;
+  }
+}

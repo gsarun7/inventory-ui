@@ -52,6 +52,43 @@ export default function InvoiceForm({
             onChange={(e) => updateField("paymentMode", e.target.value)}
           />
         </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth
+            label="e-Way Bill No"
+            value={form.ewaybillno}
+            onChange={(e) => updateField("ewaybillno", e.target.value)}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth
+            label="Destination"
+            value={form.destination}
+            onChange={(e) => updateField("destination", e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth
+            label="Motor Vehicle No"
+            value={form.motorVehicleNo}
+            onChange={(e) => updateField("motorVehicleNo", e.target.value)}
+          />
+        </Grid>
+
+
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth
+            type="date"
+            label="Delivery Date"
+            InputLabelProps={{ shrink: true }}
+            value={form.deleiveryDate}
+            onChange={(e) => updateField("deleiveryDate", e.target.value)}
+          />
+        </Grid>
 
         <Grid item xs={12}>
           <TextField
@@ -84,6 +121,7 @@ export default function InvoiceForm({
         <Grid item xs={12} sm={6}>
           <TextField
             fullWidth
+            multiline
             label="Consignee Address"
             value={form.consigneeAddress}
             onChange={(e) => updateField("consigneeAddress", e.target.value)}
@@ -102,6 +140,7 @@ export default function InvoiceForm({
         <Grid item xs={12} sm={6}>
           <TextField
             fullWidth
+            multiline
             label="Buyer Address"
             value={form.buyerAddress}
             onChange={(e) => updateField("buyerAddress", e.target.value)}
@@ -130,30 +169,9 @@ export default function InvoiceForm({
               <TableRow key={idx}>
                 <TableCell sx={{ borderRight: '1px solid #ddd' }}>{idx + 1}</TableCell>
                 <TableCell style={{ minWidth: 220 }} sx={{ borderRight: '1px solid #ddd' }}>
-                  <Autocomplete
-                    options={productList}
-                    getOptionLabel={(opt) => opt.name}
-                    freeSolo
-                    size="small"
-                    onChange={(e, val, reason) => {
-                      if (reason === 'selectOption' && val && typeof val === 'object') {
-                        // Selected from dropdown - populate all fields
-                        updateItem(idx, "name", val.name);
-                        updateItem(idx, "hsn", val.hsn);
-                        updateItem(idx, "rate", val.rate.toString());
-                      } else if (reason === 'createOption' || reason === 'clear') {
-                        // User typed or cleared - just update name
-                        updateItem(idx, "name", val || "");
-                      }
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        placeholder="Select / Type product"
-                      />
-                    )}
-                  />
-                </TableCell>
+                   <Autocomplete options={productList} getOptionLabel={(opt) => typeof opt === "string" ? opt : opt.name} value={productList.find(p => p.name === item.name) || null} freeSolo size="small" onChange={(e, val) => { if (val && typeof val === "object") { updateItem(idx, "name", val.name, e.target.value); updateItem(idx, "hsn", val.hsn); updateItem(idx, "rate", val.rate.toString(), e.target.value); } else { updateItem(idx, "name", val || "", e.target.value); } }} renderInput={(params) => (<TextField {...params} placeholder="Select / Type product" />)}
+                    /> </TableCell>
+  
 
                 <TableCell sx={{ borderRight: '1px solid #ddd' }}>
                   <TextField
@@ -171,7 +189,7 @@ export default function InvoiceForm({
                     onChange={(e) => updateItem(idx, "qty", e.target.value)}
                   />
                 </TableCell>
-                              <TableCell sx={{ borderRight: '1px solid #ddd' }}>
+                <TableCell sx={{ borderRight: '1px solid #ddd' }}>
                   <TextField
                     size="small"
                     type="number"
@@ -184,7 +202,7 @@ export default function InvoiceForm({
                     size="small"
                     value={item.per}
                     onChange={(e) => updateItem(idx, "per", e.target.value)}
-                   
+
                   />
                 </TableCell>
                 <TableCell sx={{ borderRight: '1px solid #ddd' }}>
