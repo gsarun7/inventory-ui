@@ -9,13 +9,14 @@ import { Paper, Grid, Typography, Table, TableHead, TableRow, TableCell, TableBo
 
 // Centralized font styles for easy control
 const fontStyles = {
-  header: { fontSize: "0.9rem" },
-  label: { fontSize: "0.6rem" },
-  footer: { fontSize: "8px" },
-  small: { fontSize: "10px" },
-  headerBold: { fontSize: "0.9rem", fontWeight: "bold" },
-  labelBold: { fontSize: "0.6rem", fontWeight: "bold" },
-  footerBold: { fontSize: "10px", fontWeight: "bold" }
+  title: { fontSize: "1.4rem", fontWeight: "bold" },        // Main "Tax Invoice" title
+  header: { fontSize: "0.8rem" },                          // Supplier/consignee names and addresses
+  label: { fontSize: "0.8rem" },                            // Field labels
+  footer: { fontSize: "0.8rem" },                          // Footer text
+  small: { fontSize: "0.8rem" },                            // Small text like signatures
+  headerBold: { fontSize: "0.8rem", fontWeight: "bold" },  // Bold headers
+  labelBold: { fontSize: "0.8rem", fontWeight: "bold" },    // Bold labels/values
+  footerBold: { fontSize: "0.8rem", fontWeight: "bold" }   // Bold footer text
 };
 
 // Centralized table styles for easy control
@@ -23,18 +24,18 @@ const tableStyles = {
   headerCell: {
     fontWeight: "bold",
     borderRight: '1px solid #000',
-    fontSize: "0.6rem"
+    fontSize: "0.8rem"
   },
   headerCellLast: {
     fontWeight: "bold",
-    fontSize: "0.6rem"
+    fontSize: "0.8rem"
   },
   bodyCell: {
     borderRight: '1px solid #000',
-    fontSize: "0.6rem"
+    fontSize: "0.75rem"
   },
   bodyCellLast: {
-    fontSize: "0.6rem"
+    fontSize: "0.75rem"
   }
 };
 
@@ -44,7 +45,7 @@ export default function InvoicePreview({ data }) {
   return (
     <Paper elevation={0} className="invoice-print invoice-container">
       {/* header */}
-      <Typography variant="h6" align="center" sx={{ fontWeight: "bold", mb: 1 }}>
+      <Typography variant="h6" align="center" sx={{ ...fontStyles.title, mb: 1 }}>
         Tax Invoice
       </Typography>
 
