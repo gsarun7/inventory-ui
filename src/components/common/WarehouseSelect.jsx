@@ -1,0 +1,29 @@
+import { Autocomplete, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+export default function WarehouseSelect({ value, onChange, error }) {
+  const [warehouses, setWarehouses] = useState([]);
+
+  useEffect(() => {
+    axios.get("/api/warehouses")
+      .then(res => setWarehouses(res.data));
+  }, []);
+
+  return (
+    <Autocomplete
+      options={warehouses}
+      getOptionLabel={(opt) => opt.name}
+      value={Array.isArray(warehouses) ? warehouses.find(w => w.id === value) || null : null}
+      onChange={(e, val) => onChange(val?.id || "")}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label="Warehouse *"
+          error={!!error}
+          helperText={error}
+        />
+      )}
+    />
+  );
+}

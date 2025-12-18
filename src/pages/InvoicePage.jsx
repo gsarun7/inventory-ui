@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Box, Button, Divider } from "@mui/material";
+import { Box, Button, Divider, Container, Paper, Typography } from "@mui/material";
 import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun } from "docx";
 import { saveAs } from "file-saver";
@@ -305,42 +305,49 @@ export default function InvoicePage() {
   };
 
   return (
-    <Box sx={{ padding: 3 }}>
-      <h2 style={{ marginBottom: 10 }}>Invoice Builder</h2>
+    <Container maxWidth="lg" sx={{ mt: 3 }}>
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h5" gutterBottom>Invoice Builder</Typography>
+        <Typography variant="body2" color="text.secondary" gutterBottom>
+          Create professional invoices with GST calculations, item management, and export options.
+        </Typography>
 
-      <InvoiceForm
-        form={form}
-        productList={productList}
-        updateField={updateField}
-        updateItem={updateItem}
-        addItem={addItem}
-        removeItem={removeItem}
-      />
+        <Divider sx={{ mb: 2 }} />
 
-      <Divider sx={{ marginY: 2 }} />
+        <InvoiceForm
+          form={form}
+          productList={productList}
+          updateField={updateField}
+          updateItem={updateItem}
+          addItem={addItem}
+          removeItem={removeItem}
+        />
 
-      <Box className="print-area"> {/* .print-area CSS used to restrict printing */}
-        <InvoicePreview data={form} />
-      </Box>
+        <Divider sx={{ marginY: 2 }} />
 
-      <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
-        <Button variant="outlined" onClick={() => calculateTotals(form.items, form.gstPercent)}>
-          Recalculate
-        </Button>
-        <Button variant="contained" onClick={handlePrint}>
-          Print / Save as PDF
-        </Button>
-        <Button
-          variant="contained"
-          color="success"
-          onClick={exportToExcel}
-        >
-          Export Excel
-        </Button>
-        <Button variant="outlined" onClick={() => exportToWord(form)}>
-          Export Word
-        </Button>
-      </Box>
-    </Box>
+        <Box className="print-area"> {/* .print-area CSS used to restrict printing */}
+          <InvoicePreview data={form} />
+        </Box>
+
+        <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
+          <Button variant="outlined" onClick={() => calculateTotals(form.items, form.gstPercent)}>
+            Recalculate
+          </Button>
+          <Button variant="contained" onClick={handlePrint}>
+            Print / Save as PDF
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={exportToExcel}
+          >
+            Export Excel
+          </Button>
+          <Button variant="outlined" onClick={() => exportToWord(form)}>
+            Export Word
+          </Button>
+        </Box>
+      </Paper>
+    </Container>
   );
 }

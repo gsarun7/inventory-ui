@@ -9,14 +9,17 @@ export default function Navbar() {
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   const navLinks = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Inventory", path: "/inventory" },
-    { name: "Add Item", path: "/add-item" },
-    { name: "Sales", path: "/sales" },
-    { name: "Recent Activiy", path: "/recent-activity" },
+    // { name: "Dashboard", path: "/dashboard" },
+    // { name: "Inventory", path: "/inventory" },
+    // { name: "Add Item", path: "/add-item" },
+    // { name: "Sales", path: "/sales" },
+    // { name: "Recent Activiy", path: "/recent-activity" },
     { name: "Invoice", path: "/invoice" },
     { name: "Purchase Invoice", path: "/purchase-invoice" },
-
+    { name: "Stock Movement", path: "/stock-movement" },
+    { name: "Stock Inventory", path: "/stock-inventory" },
+    { name: "Stock Adjustment", path: "/stock-adjustment" },
+    { name: "Returns", path: "/returns" },
   ];
 
   const drawer = (

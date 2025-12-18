@@ -7,6 +7,10 @@ import RecentActivityTable from "./components/RecentActivityTable/RecentActivity
 import Dashboard from "./pages/Dashboard";
 import InvoicePage from "./pages/InvoicePage";
 import PurchaseInvoicePage from "./pages/PurchaseInvoicePage";
+import StockMovementPage from "./pages/StockMovementPage";
+import StockInventoryPage from "./pages/StockInventoryPage";
+import StockAdjustmentPage from "./pages/StockAdjustmentPage";
+import ReturnPage from "./pages/ReturnPage";
 
 
 export default function App() {
@@ -23,6 +27,10 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/invoice" element={<InvoicePage />} />
           <Route path="/purchase-invoice" element={<PurchaseInvoicePage purchase />} />
+          <Route path="/stock-movement" element={<StockMovementPage />} />
+          <Route path="/stock-inventory" element={<StockInventoryPage />} />
+          <Route path="/stock-adjustment" element={<StockAdjustmentPage />} />
+          <Route path="/returns" element={<ReturnPage />} />
         </Routes>
       </div>
     </BrowserRouter>
