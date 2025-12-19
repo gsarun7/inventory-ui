@@ -26,13 +26,15 @@ export default function InvoicePage() {
     gstPercent: 18,
     items: [
       // initial one row
-      { name: "", hsn: "", qty: "", rate: "", per: "", amount: "" },
+      { name: "", hsn: "", qty: "", rate: "", per: "", amount: "", estimatedArea: "", usage: "", category: "" },
     ],
     subtotal: "0.00",
     gstAmount: "0.00",
     grandTotal: "0.00",
     amountInWords: "",
   });
+
+  const [errors, setErrors] = useState({});
 
   // products sample for autocomplete
   const productList = [
@@ -44,11 +46,11 @@ export default function InvoicePage() {
     { name: "BOND TILE SLOW", hsn: "38244000", rate: 1016.95 },
   ];
 
-  // calculate totals whenever items or gstPercent change
+  // calculate totals whenever items or gstAmount change
   useEffect(() => {
-    calculateTotals(form.items, form.gstPercent);
+    calculateTotals(form.items);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.items, form.gstPercent]);
+  }, [form.items, form.gstAmount]);
 
   const updateField = (key, value) => {
     setForm((p) => ({ ...p, [key]: value }));
@@ -71,7 +73,7 @@ export default function InvoicePage() {
   };
 
   const addItem = () =>
-    setForm((p) => ({ ...p, items: [...p.items, { name: "", hsn: "", qty: "", rate: "", per: "", amount: "" }] }));
+    setForm((p) => ({ ...p, items: [...p.items, { name: "", hsn: "", qty: "", rate: "", per: "", amount: "", estimatedArea: "", usage: "", category: "" }] }));
 
   const removeItem = (index) => {
     const newItems = [...form.items];
@@ -79,18 +81,17 @@ export default function InvoicePage() {
     setForm((p) => ({ ...p, items: newItems }));
   };
 
-  const calculateTotals = (itemsList, gstPercent = form.gstPercent) => {
+  const calculateTotals = (itemsList) => {
     let subtotal = 0;
     itemsList.forEach((it) => {
       subtotal += parseFloat(it.amount || 0);
     });
-    const gstAmount = parseFloat(((subtotal * gstPercent) / 100).toFixed(2)) || 0;
+    const gstAmount = parseFloat(form.gstAmount || 0);
     const grandTotal = parseFloat((subtotal + gstAmount).toFixed(2)) || 0;
 
     setForm((p) => ({
       ...p,
       subtotal: subtotal.toFixed(2),
-      gstAmount: gstAmount.toFixed(2),
       grandTotal: grandTotal.toFixed(2),
       amountInWords: numberToWordsIndian(Math.round(grandTotal)),
     }));
@@ -299,8 +300,30 @@ export default function InvoicePage() {
   };
 
 
+  // Validation
+  const validateForm = () => {
+    const newErrors = {};
+    if (!form.invoiceDate) newErrors.invoiceDate = "Invoice Date is required";
+    if (!form.paymentMode?.trim()) newErrors.paymentMode = "Payment Mode is required";
+    if (!form.motorVehicleNo?.trim()) newErrors.motorVehicleNo = "Motor Vehicle No is required";
+    if (!form.supplierName?.trim()) newErrors.supplierName = "Supplier Name is required";
+    if (!form.supplierAddress?.trim()) newErrors.supplierAddress = "Supplier Address is required";
+    if (!form.consigneeName?.trim()) newErrors.consigneeName = "Consignee Name is required";
+    if (!form.consigneeAddress?.trim()) newErrors.consigneeAddress = "Consignee Address is required";
+    if (!form.buyerName?.trim()) newErrors.buyerName = "Buyer Name is required";
+    if (!form.buyerAddress?.trim()) newErrors.buyerAddress = "Buyer Address is required";
+
+    // Check items - at least one item with description
+    const hasValidItem = form.items.some(item => item.name?.trim());
+    if (!hasValidItem) newErrors.items = "At least one item with Description is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   // Print: we use print CSS to only show preview area
   const handlePrint = () => {
+    if (!validateForm()) return;
     window.print();
   };
 
@@ -321,6 +344,7 @@ export default function InvoicePage() {
           updateItem={updateItem}
           addItem={addItem}
           removeItem={removeItem}
+          errors={errors}
         />
 
         <Divider sx={{ marginY: 2 }} />
@@ -329,7 +353,7 @@ export default function InvoicePage() {
           <InvoicePreview data={form} />
         </Box>
 
-        <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
+        <Box sx={{ display: "flex", gap: 2, marginTop: 2, flexWrap: "wrap" }}>
           <Button variant="outlined" onClick={() => calculateTotals(form.items, form.gstPercent)}>
             Recalculate
           </Button>
@@ -345,6 +369,36 @@ export default function InvoicePage() {
           </Button>
           <Button variant="outlined" onClick={() => exportToWord(form)}>
             Export Word
+          </Button>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => {
+              setForm({
+                invoiceNo: "",
+                invoiceDate: new Date().toISOString().slice(0, 10),
+                paymentMode: "",
+                ewaybillno: "",
+                destination: "",
+                motorVehicleNo: "",
+                deleiveryDate: new Date().toISOString().slice(0, 10),
+                supplierName: "",
+                supplierAddress: "",
+                consigneeName: "",
+                consigneeAddress: "",
+                buyerName: "",
+                buyerAddress: "",
+                gstPercent: 18,
+                items: [{ name: "", hsn: "", qty: "", rate: "", per: "", amount: "", estimatedArea: "", usage: "", category: "" }],
+                subtotal: "0.00",
+                gstAmount: "0.00",
+                grandTotal: "0.00",
+                amountInWords: "",
+              });
+              setErrors({});
+            }}
+          >
+            Clear All
           </Button>
         </Box>
       </Paper>

@@ -14,12 +14,13 @@ export default function StockInventoryPage() {
   useEffect(() => {
     if (!filters) return;
 
-    axios.get("/api/stocks", {
+    axios.get("http://localhost:8080/api/stock-inventory", {
       params: {
         ...filters,
         page,
         size
-      }
+      },
+      headers: { "Cache-Control": "no-cache" }
     }).then(res => {
       setRows(res.data.content);
       setTotal(res.data.totalElements);

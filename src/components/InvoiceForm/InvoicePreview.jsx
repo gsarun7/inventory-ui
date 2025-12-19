@@ -172,7 +172,10 @@ export default function InvoicePreview({ data }) {
           <TableHead>
             <TableRow >
               <TableCell sx={tableStyles.headerCell}>Sl</TableCell>
-              <TableCell sx={{ ...tableStyles.headerCell, width: "46%" }}>Description of Goods</TableCell>
+              <TableCell sx={tableStyles.headerCell}>Est. Area</TableCell>
+              <TableCell sx={tableStyles.headerCell}>Usage</TableCell>
+              <TableCell sx={tableStyles.headerCell}>Category</TableCell>
+              <TableCell sx={{ ...tableStyles.headerCell, width: "30%" }}>Description of Goods</TableCell>
               <TableCell sx={tableStyles.headerCell}>HSN/SAC</TableCell>
               <TableCell sx={tableStyles.headerCell}>Quantity</TableCell>
               <TableCell sx={tableStyles.headerCell}>Rate</TableCell>
@@ -185,6 +188,9 @@ export default function InvoicePreview({ data }) {
             {data.items.map((it, i) => (
               <TableRow key={i}>
                 <TableCell sx={tableStyles.bodyCell}>{i + 1}</TableCell>
+                <TableCell sx={tableStyles.bodyCell}>{it.estimatedArea || "\u00A0"}</TableCell>
+                <TableCell sx={tableStyles.bodyCell}>{it.usage || "\u00A0"}</TableCell>
+                <TableCell sx={tableStyles.bodyCell}>{it.category || "\u00A0"}</TableCell>
                 <TableCell sx={tableStyles.bodyCell}>{it.name || "\u00A0"}</TableCell>
                 <TableCell sx={tableStyles.bodyCell}>{it.hsn || "\u00A0"}</TableCell>
                 <TableCell sx={tableStyles.bodyCell}>{it.qty || "\u00A0"}</TableCell>
@@ -198,6 +204,9 @@ export default function InvoicePreview({ data }) {
             {Array.from({ length: Math.max(0, blankRows - data.items.length) }).map((_, i) => (
               <TableRow key={`blank-${i}`}>
                 <TableCell sx={tableStyles.bodyCell}>&nbsp;</TableCell>
+                <TableCell sx={tableStyles.bodyCell}></TableCell>
+                <TableCell sx={tableStyles.bodyCell}></TableCell>
+                <TableCell sx={tableStyles.bodyCell}></TableCell>
                 <TableCell sx={tableStyles.bodyCell}></TableCell>
                 <TableCell sx={tableStyles.bodyCell}></TableCell>
                 <TableCell sx={tableStyles.bodyCell}></TableCell>

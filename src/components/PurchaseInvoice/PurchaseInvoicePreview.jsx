@@ -31,6 +31,7 @@ export default function PurchaseInvoicePreview({ data, className = "" }) {
         <Table size="small">
           <TableHead>
             <TableRow>
+              <TableCell>Category</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>HSN</TableCell>
               <TableCell>Brand</TableCell>
@@ -46,6 +47,7 @@ export default function PurchaseInvoicePreview({ data, className = "" }) {
           <TableBody>
             {data.items.map((it, i) => (
               <TableRow key={i}>
+                <TableCell>{it.category || "\u00A0"}</TableCell>
                 <TableCell>{it.description || "\u00A0"}</TableCell>
                 <TableCell>{it.hsn || "\u00A0"}</TableCell>
                 <TableCell>{it.brand || "\u00A0"}</TableCell>

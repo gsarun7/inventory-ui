@@ -22,7 +22,7 @@ export default function ReturnPage() {
     refundAmount: "0.00",
     notes: "",
     items: [
-      { itemId: "", itemName: "", soldQty: "", returnQty: "", unitPrice: "", totalPrice: "", condition: "GOOD" }
+      { itemId: "", itemName: "", soldQty: "", returnQty: "", unitPrice: "", totalPrice: "", condition: "GOOD", category: "" }
     ]
   });
 
@@ -94,7 +94,7 @@ export default function ReturnPage() {
   const addItemRow = () => {
     setForm((p) => ({
       ...p,
-      items: [...p.items, { itemId: "", itemName: "", soldQty: "", returnQty: "", unitPrice: "", totalPrice: "", condition: "GOOD" }]
+      items: [...p.items, { itemId: "", itemName: "", soldQty: "", returnQty: "", unitPrice: "", totalPrice: "", condition: "GOOD", category: "" }]
     }));
   };
 
@@ -151,13 +151,37 @@ export default function ReturnPage() {
           <Typography variant="h6" sx={{ mt: 2 }}>Return Voucher Preview</Typography>
           <ReturnPreview data={form} className="printable-area" />
 
-          <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
+          <Box sx={{ mt: 2, display: "flex", gap: 2, flexWrap: "wrap" }}>
             <Button variant="outlined" onClick={handleSave}>
               Process Return
             </Button>
 
             <Button variant="contained" onClick={handlePrint}>
               Print Voucher
+            </Button>
+
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                setForm({
+                  returnId: "",
+                  returnDate: new Date().toISOString().slice(0, 10),
+                  originalInvoiceNo: "",
+                  originalInvoiceDate: "",
+                  customerName: "",
+                  customerPhone: "",
+                  customerAddress: "",
+                  returnReason: "",
+                  returnCondition: "GOOD",
+                  refundMethod: "CASH",
+                  refundAmount: "0.00",
+                  notes: "",
+                  items: [{ itemId: "", itemName: "", soldQty: "", returnQty: "", unitPrice: "", totalPrice: "", condition: "GOOD", category: "" }]
+                });
+              }}
+            >
+              Clear All
             </Button>
           </Box>
         </Box>

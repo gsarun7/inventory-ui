@@ -7,6 +7,17 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
+const categories = [
+  "Granite",
+  "Tiles",
+  "Marble",
+  "Adhesive",
+  "Grout",
+  "Tools",
+  "Accessories",
+  "Other"
+];
+
 export default function StockAdjustmentForm({
   form,
   sampleItems,
@@ -90,6 +101,7 @@ export default function StockAdjustmentForm({
       <Table size="small">
         <TableHead>
           <TableRow>
+            <TableCell>Category</TableCell>
             <TableCell>Item</TableCell>
             <TableCell>Current Stock</TableCell>
             <TableCell>Adjustment Qty</TableCell>
@@ -101,6 +113,20 @@ export default function StockAdjustmentForm({
         <TableBody>
           {form.items.map((item, index) => (
             <TableRow key={index}>
+              <TableCell>
+                <FormControl size="small" sx={{ minWidth: 100 }}>
+                  <Select
+                    value={item.category || ""}
+                    onChange={(e) => updateItem(index, "category", e.target.value)}
+                    displayEmpty
+                  >
+                    <MenuItem value=""><em>Select</em></MenuItem>
+                    {categories.map((cat) => (
+                      <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </TableCell>
               <TableCell>
                 <Autocomplete
                   options={sampleItems}

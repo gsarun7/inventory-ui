@@ -16,7 +16,7 @@ export default function StockAdjustmentPage() {
     reference: "",
     notes: "",
     items: [
-      { itemId: "", itemName: "", currentStock: "", adjustmentQty: "", reason: "", finalStock: "" }
+      { itemId: "", itemName: "", currentStock: "", adjustmentQty: "", reason: "", finalStock: "", category: "" }
     ]
   });
 
@@ -84,7 +84,7 @@ export default function StockAdjustmentPage() {
   const addItemRow = () => {
     setForm((p) => ({
       ...p,
-      items: [...p.items, { itemId: "", itemName: "", currentStock: "", adjustmentQty: "", reason: "", finalStock: "" }]
+      items: [...p.items, { itemId: "", itemName: "", currentStock: "", adjustmentQty: "", reason: "", finalStock: "", category: "" }]
     }));
   };
 
@@ -141,13 +141,31 @@ export default function StockAdjustmentPage() {
           <Typography variant="h6" sx={{ mt: 2 }}>Stock Adjustment Preview</Typography>
           <StockAdjustmentPreview data={form} className="printable-area" />
 
-          <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
+          <Box sx={{ mt: 2, display: "flex", gap: 2, flexWrap: "wrap" }}>
             <Button variant="outlined" onClick={handleSave}>
               Save Adjustment
             </Button>
 
             <Button variant="contained" onClick={handlePrint}>
               Print / Save as PDF
+            </Button>
+
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                setForm({
+                  adjustmentId: "",
+                  adjustmentDate: new Date().toISOString().slice(0, 10),
+                  adjustmentType: "ADD",
+                  warehouse: "",
+                  reference: "",
+                  notes: "",
+                  items: [{ itemId: "", itemName: "", currentStock: "", adjustmentQty: "", reason: "", finalStock: "", category: "" }]
+                });
+              }}
+            >
+              Clear All
             </Button>
           </Box>
         </Box>

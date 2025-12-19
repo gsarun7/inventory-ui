@@ -57,6 +57,7 @@ export default function StockAdjustmentPreview({ data, className }) {
       <Table size="small" sx={{ mb: 3 }}>
         <TableHead>
           <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+            <TableCell sx={{ fontWeight: "bold" }}>Category</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Item Name</TableCell>
             <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Current Stock</TableCell>
             <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Adjustment</TableCell>
@@ -67,6 +68,7 @@ export default function StockAdjustmentPreview({ data, className }) {
         <TableBody>
           {data.items.map((item, index) => (
             <TableRow key={index}>
+              <TableCell>{item.category || "N/A"}</TableCell>
               <TableCell>{item.itemName || "Not selected"}</TableCell>
               <TableCell sx={{ textAlign: "center" }}>{item.currentStock || "0"}</TableCell>
               <TableCell sx={{ textAlign: "center", fontWeight: "bold", color: data.adjustmentType === "ADD" ? "green" : "red" }}>

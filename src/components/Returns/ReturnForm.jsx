@@ -7,6 +7,17 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
+const categories = [
+  "Granite",
+  "Tiles",
+  "Marble",
+  "Adhesive",
+  "Grout",
+  "Tools",
+  "Accessories",
+  "Other"
+];
+
 export default function ReturnForm({
   form,
   sampleSoldItems,
@@ -169,6 +180,7 @@ export default function ReturnForm({
       <Table size="small">
         <TableHead>
           <TableRow>
+            <TableCell>Category</TableCell>
             <TableCell>Item</TableCell>
             <TableCell>Sold Qty</TableCell>
             <TableCell>Return Qty</TableCell>
@@ -181,6 +193,20 @@ export default function ReturnForm({
         <TableBody>
           {form.items.map((item, index) => (
             <TableRow key={index}>
+              <TableCell>
+                <FormControl size="small" sx={{ minWidth: 100 }}>
+                  <Select
+                    value={item.category || ""}
+                    onChange={(e) => updateItem(index, "category", e.target.value)}
+                    displayEmpty
+                  >
+                    <MenuItem value=""><em>Select</em></MenuItem>
+                    {categories.map((cat) => (
+                      <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </TableCell>
               <TableCell>
                 <Autocomplete
                   options={sampleSoldItems}

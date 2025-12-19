@@ -17,9 +17,9 @@ export default function PurchaseInvoicePage() {
     deliveryLocation: "",
     paymentMode: "CASH",
     remarks: "",
-    gstPercent: 18,
+    gstAmount: "0.00",
     items: [
-      { hsn: "", description: "", brand: "", size: "", grade: "", qty: "", unit: "", rate: "", amount: "" }
+      { hsn: "", description: "", brand: "", size: "", grade: "", qty: "", unit: "", rate: "", amount: "", category: "" }
     ],
     subtotal: "0.00",
     grandTotal: "0.00",
@@ -51,7 +51,7 @@ export default function PurchaseInvoicePage() {
   };
 
   const addItemRow = () => {
-    setForm((p) => ({ ...p, items: [...p.items, { hsn: "", description: "", brand: "", size: "", grade: "", qty: "", unit: "", rate: "", amount: "" }] }));
+    setForm((p) => ({ ...p, items: [...p.items, { hsn: "", description: "", brand: "", size: "", grade: "", qty: "", unit: "", rate: "", amount: "", category: "" }] }));
   };
 
   const removeItemRow = (index) => {
@@ -59,10 +59,10 @@ export default function PurchaseInvoicePage() {
     setForm((p) => ({ ...p, items }));
   };
 
-  // recalc totals and amount in words whenever items or gstPercent change
+  // recalc totals and amount in words whenever items or gstAmount change
   useEffect(() => {
     const subtotal = form.items.reduce((s, it) => s + (Number(it.amount || 0)), 0);
-    const gst = (subtotal * (Number(form.gstPercent || 0) / 100));
+    const gst = parseFloat(form.gstAmount || 0);
     const grand = subtotal + gst;
     setForm((p) => ({
       ...p,
@@ -71,7 +71,7 @@ export default function PurchaseInvoicePage() {
       amountInWords: numberToWordsIndian(Math.round(grand))
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.items, form.gstPercent]);
+  }, [form.items, form.gstAmount]);
 
   // print only preview area by class name .printable-area
   const handlePrint = () => {
@@ -113,9 +113,8 @@ export default function PurchaseInvoicePage() {
           <Typography variant="h6" sx={{ mt: 2 }}>Purchase Invoice Preview</Typography>
           <PurchaseInvoicePreview data={form} className="printable-area" />
 
-          <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
+          <Box sx={{ mt: 2, display: "flex", gap: 2, flexWrap: "wrap" }}>
             <Button variant="outlined" onClick={() => {
-              // optional: you can implement a "save" API call here
               alert("Preview saved locally (no backend). Implement API call to persist.");
             }}>
               Save (No Backend)
@@ -123,6 +122,30 @@ export default function PurchaseInvoicePage() {
 
             <Button variant="contained" onClick={handlePrint}>
               Print / Save as PDF
+            </Button>
+
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                setForm({
+                  invoiceId: "",
+                  invoiceDate: new Date().toISOString().slice(0, 10),
+                  supplier: "",
+                  supplierAddress: "",
+                  vehicleNo: "",
+                  deliveryLocation: "",
+                  paymentMode: "",
+                  remarks: "",
+                  gstAmount: "0.00",
+                  items: [{ hsn: "", description: "", brand: "", size: "", grade: "", qty: "", unit: "", rate: "", amount: "", category: "" }],
+                  subtotal: "0.00",
+                  grandTotal: "0.00",
+                  amountInWords: ""
+                });
+              }}
+            >
+              Clear All
             </Button>
           </Box>
         </Box>

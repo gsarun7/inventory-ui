@@ -75,6 +75,7 @@ export default function ReturnPreview({ data, className }) {
       <Table size="small" sx={{ mb: 3 }}>
         <TableHead>
           <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+            <TableCell sx={{ fontWeight: "bold" }}>Category</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Item Description</TableCell>
             <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Sold Qty</TableCell>
             <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Returned Qty</TableCell>
@@ -86,6 +87,7 @@ export default function ReturnPreview({ data, className }) {
         <TableBody>
           {data.items.map((item, index) => (
             <TableRow key={index}>
+              <TableCell>{item.category || "N/A"}</TableCell>
               <TableCell>{item.itemName || "Not selected"}</TableCell>
               <TableCell sx={{ textAlign: "center" }}>{item.soldQty || "0"}</TableCell>
               <TableCell sx={{ textAlign: "center", fontWeight: "bold", color: "red" }}>{item.returnQty || "0"}</TableCell>

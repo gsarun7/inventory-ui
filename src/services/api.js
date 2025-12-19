@@ -1,4 +1,7 @@
-const API_URL = "https://ims-backend-9y9x.onrender.com/api";
+// const API_URL = "https://ims-backend-9y9x.onrender.com/api";
+import axios from "axios";
+
+const API_URL = "http://localhost:8080/api";
 
 export const getProducts = async () => {
   const res = await fetch(`${API_URL}/items`);
@@ -50,4 +53,10 @@ export const createSale = async (sale) => {
   });
   return res.json();
 };
+
+export const fetchCategories = () =>
+  axios.get(`${API_URL}/categories`);
+
+export const fetchWarehouses = () =>
+  axios.get(`${API_URL}/warehouses`);
 

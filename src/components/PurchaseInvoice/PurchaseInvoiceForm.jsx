@@ -1,7 +1,18 @@
 import React from "react";
-import { Grid, TextField, Button, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Box, Autocomplete } from "@mui/material";
+import { Grid, TextField, Button, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Box, Autocomplete, FormControl, Select, MenuItem } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+
+const categories = [
+  "Granite",
+  "Tiles",
+  "Marble",
+  "Adhesive",
+  "Grout",
+  "Tools",
+  "Accessories",
+  "Other"
+];
 
 /**
  * PurchaseInvoiceForm
@@ -53,6 +64,7 @@ export default function PurchaseInvoiceForm({ form, sampleProducts, updateField,
           <TableHead>
             <TableRow>
               <TableCell>Sr</TableCell>
+              <TableCell>Category</TableCell>
               <TableCell>HSN</TableCell>
               <TableCell>Description (autocomplete)</TableCell>
               <TableCell>Brand</TableCell>
@@ -71,6 +83,21 @@ export default function PurchaseInvoiceForm({ form, sampleProducts, updateField,
               <TableRow key={idx}>
                 <TableCell>{idx + 1}</TableCell>
 
+                <TableCell sx={{ minWidth: 100 }}>
+                  <FormControl size="small" fullWidth>
+                    <Select
+                      value={row.category || ""}
+                      onChange={(e) => updateItem(idx, "category", e.target.value)}
+                      displayEmpty
+                    >
+                      <MenuItem value=""><em>Select</em></MenuItem>
+                      {categories.map((cat) => (
+                        <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </TableCell>
+
                 <TableCell sx={{ maxWidth: 120 }}>
                   <TextField size="small" value={row.hsn || ""} onChange={(e) => updateItem(idx, "hsn", e.target.value)} />
                 </TableCell>
@@ -87,7 +114,6 @@ export default function PurchaseInvoiceForm({ form, sampleProducts, updateField,
                         updateItem(idx, "hsn", selected.hsn || "");
                         updateItem(idx, "size", selected.size || "");
                         updateItem(idx, "grade", selected.grade || "");
-                        updateItem(idx, "rate", selected.rate || "");
                         updateItem(idx, "unit", selected.unit || "");
                       }
                     }}
@@ -132,7 +158,7 @@ export default function PurchaseInvoiceForm({ form, sampleProducts, updateField,
             ))}
 
             <TableRow>
-              <TableCell colSpan={11} sx={{ p: 1 }}>
+              <TableCell colSpan={12} sx={{ p: 1 }}>
                 <Button startIcon={<AddIcon />} size="small" onClick={addItemRow}>Add Row</Button>
               </TableCell>
             </TableRow>
@@ -142,8 +168,8 @@ export default function PurchaseInvoiceForm({ form, sampleProducts, updateField,
 
       {/* quick totals */}
       <Box sx={{ mt: 2, display: "flex", gap: 2, alignItems: "center" }}>
-        <TextField label="GST %" type="number" size="small" value={form.gstPercent} onChange={(e) => updateField("gstPercent", e.target.value)} />
         <TextField label="Subtotal" size="small" value={form.subtotal} disabled />
+        <TextField label="GST Amount" type="number" size="small" value={form.gstAmount} onChange={(e) => updateField("gstAmount", e.target.value)} />
         <TextField label="Grand Total" size="small" value={form.grandTotal} disabled />
       </Box>
     </Box>
