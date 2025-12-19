@@ -1,27 +1,31 @@
 import React from "react";
 import {
-  Box, Typography, TextField, Button, Grid, FormControl, InputLabel,
-  Select, MenuItem, Table, TableBody, TableCell, TableHead, TableRow,
-  IconButton, Autocomplete
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  IconButton
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import CategorySelect from "../common/CategorySelect";
+import ProductSelect from "../common/ProductSelect";
 
-const categories = [
-  "Granite",
-  "Tiles",
-  "Marble",
-  "Adhesive",
-  "Grout",
-  "Tools",
-  "Accessories",
-  "Other"
-];
 
 export default function StockAdjustmentForm({
   form,
-  sampleItems,
-  sampleWarehouses,
+  categories,
+  warehouses,
   updateField,
   updateItem,
   addItemRow,
@@ -29,160 +33,192 @@ export default function StockAdjustmentForm({
 }) {
   return (
     <Box>
-      {/* Header Information */}
-      <Typography variant="h6" gutterBottom>Adjustment Details</Typography>
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+
+      {/* ---------- Header ---------- */}
+      <Typography variant="h6" gutterBottom>
+        Adjustment Details
+      </Typography>
+
+      <Grid container spacing={2} mb={3}>
         <Grid item xs={12} md={3}>
           <TextField
             fullWidth
             label="Adjustment ID"
             value={form.adjustmentId}
-            onChange={(e) => updateField("adjustmentId", e.target.value)}
+            onChange={(e) =>
+              updateField("adjustmentId", e.target.value)
+            }
           />
         </Grid>
+
         <Grid item xs={12} md={3}>
           <TextField
             fullWidth
             type="date"
             label="Adjustment Date"
-            value={form.adjustmentDate}
-            onChange={(e) => updateField("adjustmentDate", e.target.value)}
             InputLabelProps={{ shrink: true }}
+            value={form.adjustmentDate}
+            onChange={(e) =>
+              updateField("adjustmentDate", e.target.value)
+            }
           />
         </Grid>
+
         <Grid item xs={12} md={3}>
           <FormControl fullWidth>
             <InputLabel>Adjustment Type</InputLabel>
             <Select
               value={form.adjustmentType}
               label="Adjustment Type"
-              onChange={(e) => updateField("adjustmentType", e.target.value)}
+              onChange={(e) =>
+                updateField("adjustmentType", e.target.value)
+              }
             >
-              <MenuItem value="ADD">Add Stock (+)</MenuItem>
-              <MenuItem value="REDUCE">Reduce Stock (-)</MenuItem>
+              <MenuItem value="ADD">Add (+)</MenuItem>
+              <MenuItem value="REDUCE">Reduce (-)</MenuItem>
             </Select>
           </FormControl>
         </Grid>
+
         <Grid item xs={12} md={3}>
-          <Autocomplete
-            options={sampleWarehouses}
-            getOptionLabel={(option) => option.name}
-            value={sampleWarehouses.find(w => w.id === form.warehouse) || null}
-            onChange={(e, val) => updateField("warehouse", val?.id || "")}
-            renderInput={(params) => (
-              <TextField {...params} label="Warehouse" />
-            )}
-          />
+          <FormControl fullWidth>
+            <InputLabel>Warehouse</InputLabel>
+            <Select
+              value={form.warehouse}
+              label="Warehouse"
+              onChange={(e) =>
+                updateField("warehouse", e.target.value)
+              }
+            >
+              {warehouses.map(w => (
+                <MenuItem key={w.id} value={w.id}>
+                  {w.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
+
         <Grid item xs={12} md={6}>
           <TextField
             fullWidth
-            label="Reference/Document No."
+            label="Reference / Document No"
             value={form.reference}
-            onChange={(e) => updateField("reference", e.target.value)}
-            placeholder="PO-001, INV-123, etc."
+            onChange={(e) =>
+              updateField("reference", e.target.value)
+            }
           />
         </Grid>
+
         <Grid item xs={12} md={6}>
           <TextField
             fullWidth
-            label="Notes/Remarks"
+            label="Notes"
             value={form.notes}
-            onChange={(e) => updateField("notes", e.target.value)}
+            onChange={(e) =>
+              updateField("notes", e.target.value)
+            }
             multiline
             rows={2}
-            placeholder="Reason for adjustment..."
           />
         </Grid>
       </Grid>
 
-      {/* Items Table */}
-      <Typography variant="h6" gutterBottom>Items to Adjust</Typography>
+      {/* ---------- Items Table ---------- */}
+      <Typography variant="h6" gutterBottom>
+        Items to Adjust
+      </Typography>
+
       <Table size="small">
         <TableHead>
           <TableRow>
             <TableCell>Category</TableCell>
-            <TableCell>Item</TableCell>
-            <TableCell>Current Stock</TableCell>
-            <TableCell>Adjustment Qty</TableCell>
+            <TableCell>Product</TableCell>
+            <TableCell>Current</TableCell>
+            <TableCell>Adjust</TableCell>
             <TableCell>Reason</TableCell>
-            <TableCell>Final Stock</TableCell>
-            <TableCell width="80">Actions</TableCell>
+            <TableCell>Final</TableCell>
+            <TableCell width={60}></TableCell>
           </TableRow>
         </TableHead>
+
         <TableBody>
           {form.items.map((item, index) => (
-            <TableRow key={index}>
-              <TableCell>
-                <FormControl size="small" sx={{ minWidth: 100 }}>
-                  <Select
-                    value={item.category || ""}
-                    onChange={(e) => updateItem(index, "category", e.target.value)}
-                    displayEmpty
-                  >
-                    <MenuItem value=""><em>Select</em></MenuItem>
-                    {categories.map((cat) => (
-                      <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </TableCell>
-              <TableCell>
-                <Autocomplete
-                  options={sampleItems}
-                  getOptionLabel={(option) => option.name}
-                  value={sampleItems.find(i => i.id === item.itemId) || null}
-                  onChange={(e, val) => {
-                    updateItem(index, "itemId", val?.id || "");
-                    updateItem(index, "itemName", val?.name || "");
-                    updateItem(index, "currentStock", val?.currentStock || "");
+            <TableRow key={`${item.itemId || "row"}-${index}`}>
+              {/* Category */}
+              <TableCell width={160}>
+                <CategorySelect
+                  value={item.category}
+                  onChange={(v) => {
+                    updateItem(index, "category", v);
+                    updateItem(index, "itemId", "");
+                    updateItem(index, "itemName", "");
+                    updateItem(index, "currentStock", "");
                   }}
-                  renderInput={(params) => (
-                    <TextField {...params} size="small" placeholder="Select item..." />
-                  )}
-                  sx={{ minWidth: 200 }}
                 />
               </TableCell>
-              <TableCell>
+
+              {/* Product */}
+              <TableCell width={220}>
+                <ProductSelect
+                  categoryId={item.category}
+                  value={item.itemId}
+                  onChange={(v, product) => {
+                    updateItem(index, "itemId", v);
+                    updateItem(index, "itemName", product?.name || "");
+                    updateItem(
+                      index,
+                      "currentStock",
+                      product?.currentStock || 0
+                    );
+                  }}
+                />
+              </TableCell>
+
+              {/* Current Stock */}
+              <TableCell width={90}>
                 <TextField
                   size="small"
-                  type="number"
                   value={item.currentStock}
-                  onChange={(e) => updateItem(index, "currentStock", e.target.value)}
-                  placeholder="0"
-                  sx={{ width: 80 }}
+                  InputProps={{ readOnly: true }}
                 />
               </TableCell>
-              <TableCell>
+
+              {/* Adjustment Qty */}
+              <TableCell width={90}>
                 <TextField
                   size="small"
                   type="number"
                   value={item.adjustmentQty}
-                  onChange={(e) => updateItem(index, "adjustmentQty", e.target.value)}
-                  placeholder="0"
-                  sx={{ width: 80 }}
+                  onChange={(e) =>
+                    updateItem(index, "adjustmentQty", e.target.value)
+                  }
                 />
               </TableCell>
+
+              {/* Reason */}
               <TableCell>
                 <TextField
                   size="small"
                   value={item.reason}
-                  onChange={(e) => updateItem(index, "reason", e.target.value)}
-                  placeholder="Damaged, Lost, etc."
-                  sx={{ minWidth: 120 }}
+                  onChange={(e) =>
+                    updateItem(index, "reason", e.target.value)
+                  }
                 />
               </TableCell>
-              <TableCell>
+
+              {/* Final Stock */}
+              <TableCell width={90}>
                 <TextField
                   size="small"
                   value={item.finalStock}
                   InputProps={{ readOnly: true }}
-                  sx={{ width: 80, "& .MuiInputBase-input": { fontWeight: "bold" } }}
                 />
               </TableCell>
+
+              {/* Delete */}
               <TableCell>
                 <IconButton
-                  size="small"
                   color="error"
                   onClick={() => removeItemRow(index)}
                   disabled={form.items.length === 1}
@@ -195,13 +231,13 @@ export default function StockAdjustmentForm({
         </TableBody>
       </Table>
 
-      <Box sx={{ mt: 2 }}>
+      <Box mt={2}>
         <Button
           variant="outlined"
           startIcon={<AddIcon />}
           onClick={addItemRow}
         >
-          Add Another Item
+          Add Item
         </Button>
       </Box>
     </Box>

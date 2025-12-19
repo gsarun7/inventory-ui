@@ -3,12 +3,13 @@ import {
   Table, TableHead, TableRow, TableCell,
   TableBody, TablePagination, Chip
 } from "@mui/material";
-
-export default function StockMovementTable({ rows }) {
+export default function StockMovementTable({ rows = [] }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const data = rows.slice(
+  const safeRows = Array.isArray(rows) ? rows : [];
+
+  const data = safeRows.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
@@ -28,37 +29,49 @@ export default function StockMovementTable({ rows }) {
         </TableHead>
 
         <TableBody>
-          {data.map((r, i) => (
-            <TableRow key={i}>
-              <TableCell>{r.date}</TableCell>
-              <TableCell>{r.referenceNo}</TableCell>
-              <TableCell>
-                <Chip
-                  size="small"
-                  label={r.referenceType}
-                  color={r.quantityChange > 0 ? "success" : "error"}
-                />
-              </TableCell>
-
-              <TableCell align="right" sx={{ color: "green" }}>
-                {r.quantityChange > 0 ? r.quantityChange : "-"}
-              </TableCell>
-
-              <TableCell align="right" sx={{ color: "red" }}>
-                {r.quantityChange < 0 ? Math.abs(r.quantityChange) : "-"}
-              </TableCell>
-
-              <TableCell align="right">
-                {r.runningBalance}
+          {data.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} align="center">
+                No movements found
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            data.map((r, i) => (
+              <TableRow key={i}>
+                <TableCell>
+                  {new Date(r.date).toLocaleString()}
+                </TableCell>
+
+                <TableCell>{r.referenceId}</TableCell>
+
+                <TableCell>
+                  <Chip
+                    size="small"
+                    label={r.referenceType}
+                    color={r.quantityChange > 0 ? "success" : "error"}
+                  />
+                </TableCell>
+
+                <TableCell align="right" sx={{ color: "green" }}>
+                  {r.quantityChange > 0 ? r.quantityChange : "-"}
+                </TableCell>
+
+                <TableCell align="right" sx={{ color: "red" }}>
+                  {r.quantityChange < 0 ? Math.abs(r.quantityChange) : "-"}
+                </TableCell>
+
+                <TableCell align="right">
+                  {r.runningBalance}
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
 
       <TablePagination
         component="div"
-        count={rows.length}
+        count={safeRows.length}
         page={page}
         rowsPerPage={rowsPerPage}
         onPageChange={(e, p) => setPage(p)}

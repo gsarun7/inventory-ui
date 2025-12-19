@@ -3,19 +3,20 @@ import { Paper, Typography, Container, Divider } from "@mui/material";
 import StockMovementFilters from "../components/StockMovement/StockMovementFilters";
 import StockSummary from "../components/StockMovement/StockSummary";
 import StockMovementTable from "../components/StockMovement/StockMovementTable";
-import { fetchStockLedger } from "../components/StockMovement/stockMovement.api";
+import { fetchStockLedger } from "../services/stockMovement.api";
 
 export default function StockMovementPage() {
   const [filters, setFilters] = useState({});
   const [summary, setSummary] = useState(null);
   const [rows, setRows] = useState([]);
 
-  const handleSearch = async (f) => {
-    const res = await fetchStockLedger(f);
-    setFilters(f);
-    setSummary(res.summary);
-    setRows(res.movements);
-  };
+const handleSearch = async (f) => {
+  const res = await fetchStockLedger(f);
+
+  setFilters(f);
+  setRows(res.content);   // ✅ FIX
+  setSummary(null);       // or compute separately
+};
 
   return (
     <Container maxWidth="lg" sx={{ mt: 3 }}>

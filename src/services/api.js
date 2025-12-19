@@ -1,5 +1,6 @@
 // const API_URL = "https://ims-backend-9y9x.onrender.com/api";
 import axios from "axios";
+import apiClient from "./apiClient";
 
 const API_URL = "http://localhost:8080/api";
 
@@ -54,9 +55,40 @@ export const createSale = async (sale) => {
   return res.json();
 };
 
+// export const fetchCategories = () =>
+//   axios.get(`${API_URL}/categories`);
+
+// export const fetchWarehouses = () =>
+//   axios.get(`${API_URL}/warehouses`);
+
 export const fetchCategories = () =>
-  axios.get(`${API_URL}/categories`);
+  apiClient.get("/api/categories");
+
+export const fetchProductsByCategory = (categoryId) =>
+  apiClient.get("/api/products", {
+    params: { categoryId }
+  });
 
 export const fetchWarehouses = () =>
-  axios.get(`${API_URL}/warehouses`);
+  apiClient.get("/api/warehouses");
 
+export const fetchWarehousesByProduct = (productId) =>
+  apiClient.get(`/api/warehouses/by-product/${productId}`);
+
+/* Product typeahead */
+export const searchProducts = (query) =>
+  apiClient.get("/api/products/search", {
+    params: { query }
+  });
+
+/* Current stock */
+export const fetchCurrentStock = (productId, warehouseId) =>
+  apiClient.get("/api/stock/current", {
+    params: { productId, warehouseId }
+  });
+
+/* Save adjustment */
+export const saveStockAdjustment = (payload) =>
+  apiClient.post("/api/stock-adjustments", payload);
+
+export default apiClient;

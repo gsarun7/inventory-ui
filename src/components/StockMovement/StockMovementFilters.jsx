@@ -1,70 +1,27 @@
-import { useEffect, useState } from "react";
-import {
-  Grid, TextField, Button, Autocomplete, FormHelperText
-} from "@mui/material";
-import axios from "axios";
+import { useState } from "react";
+import { Grid, TextField, Button } from "@mui/material";
+import CategorySelect from "../common/CategorySelect";
+import ProductSelect from "../common/ProductSelect";
+import WarehouseSelect from "../common/WarehouseSelect";
 
 export default function StockMovementFilters({ onSearch }) {
 
-  const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [warehouses, setWarehouses] = useState([]);
-
-  const [category, setCategory] = useState(null);
-  const [product, setProduct] = useState(null);
-  const [warehouse, setWarehouse] = useState(null);
+  const [categoryId, setCategoryId] = useState("");
+  const [productId, setProductId] = useState("");
+  const [warehouseId, setWarehouseId] = useState("");
 
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
   const [errors, setErrors] = useState({});
 
-  /* ---------------- Load Masters ---------------- */
-
-  useEffect(() => {
-    axios.get("/api/categories").then(res => setCategories(res.data));
-  }, []);
-
-  useEffect(() => {
-    if (!category) {
-      setProducts([]);
-      setProduct(null);
-      setWarehouses([]);
-      setWarehouse(null);
-      return;
-    }
-
-    axios.get("/api/products", {
-      params: { categoryId: category.id }
-    }).then(res => {
-      setProducts(res.data);
-      setProduct(null);
-      setWarehouses([]);
-      setWarehouse(null);
-    });
-  }, [category]);
-
-  useEffect(() => {
-    if (!product) {
-      setWarehouses([]);
-      setWarehouse(null);
-      return;
-    }
-
-    axios.get(`/api/warehouses/by-product/${product.id}`)
-      .then(res => {
-        setWarehouses(res.data);
-        setWarehouse(null);
-      });
-  }, [product]);
-
   /* ---------------- Validation ---------------- */
 
   const validate = () => {
     const e = {};
-    if (!category) e.category = "Category is required";
-    if (!product) e.product = "Product is required";
-    if (!warehouse) e.warehouse = "Warehouse is required";
+    if (!categoryId) e.category = "Category is required";
+    if (!productId) e.product = "Product is required";
+    if (!warehouseId) e.warehouse = "Warehouse is required";
 
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -76,20 +33,18 @@ export default function StockMovementFilters({ onSearch }) {
     if (!validate()) return;
 
     onSearch({
-      categoryId: category.id,
-      productId: product.id,
-      warehouseId: warehouse.id,
+      categoryId,
+      productId,
+      warehouseId,
       fromDate,
       toDate
     });
   };
 
   const clearFilters = () => {
-    setCategory(null);
-    setProduct(null);
-    setWarehouse(null);
-    setProducts([]);
-    setWarehouses([]);
+    setCategoryId("");
+    setProductId("");
+    setWarehouseId("");
     setFromDate("");
     setToDate("");
     setErrors({});
@@ -102,55 +57,42 @@ export default function StockMovementFilters({ onSearch }) {
 
       {/* Category */}
       <Grid item xs={3}>
-        <Autocomplete
-          options={categories}
-          getOptionLabel={o => o.name}
-          value={category}
-          onChange={(e, v) => {
-            setCategory(v);
+        <CategorySelect
+          value={categoryId}
+          onChange={(v) => {
+            setCategoryId(v);
+            setProductId("");
+            setWarehouseId("");
             setErrors(prev => ({ ...prev, category: null }));
           }}
-          renderInput={(p) =>
-            <TextField {...p} label="Category *" size="small" error={!!errors.category} />
-          }
+          error={errors.category}
         />
-        {errors.category && <FormHelperText error>{errors.category}</FormHelperText>}
       </Grid>
 
       {/* Product */}
       <Grid item xs={3}>
-        <Autocomplete
-          options={products}
-          getOptionLabel={o => o.name}
-          value={product}
-          onChange={(e, v) => {
-            setProduct(v);
+        <ProductSelect
+          categoryId={categoryId}
+          value={productId}
+          onChange={(v) => {
+            setProductId(v);
+            setWarehouseId("");
             setErrors(prev => ({ ...prev, product: null }));
           }}
-          renderInput={(p) =>
-            <TextField {...p} label="Product *" size="small" error={!!errors.product} />
-          }
-          disabled={!category}
+          error={errors.product}
         />
-        {errors.product && <FormHelperText error>{errors.product}</FormHelperText>}
       </Grid>
 
       {/* Warehouse */}
       <Grid item xs={3}>
-        <Autocomplete
-          options={warehouses}
-          getOptionLabel={o => o.name}
-          value={warehouse}
-          onChange={(e, v) => {
-            setWarehouse(v);
+        <WarehouseSelect
+          value={warehouseId}
+          onChange={(v) => {
+            setWarehouseId(v);
             setErrors(prev => ({ ...prev, warehouse: null }));
           }}
-          renderInput={(p) =>
-            <TextField {...p} label="Warehouse *" size="small" error={!!errors.warehouse} />
-          }
-          disabled={!product}
+          error={errors.warehouse}
         />
-        {errors.warehouse && <FormHelperText error>{errors.warehouse}</FormHelperText>}
       </Grid>
 
       {/* Dates */}

@@ -1,8 +1,8 @@
 import InventoryFilters from "../components/StockInventory/InventoryFilters";
 import InventoryTable from "../components/StockInventory/InventoryTable";
 import { useEffect, useState } from "react";
-import { Box, Typography, Container, Paper, Divider } from "@mui/material";
-import axios from "axios";
+import { Typography, Container, Paper, Divider } from "@mui/material";
+import { fetchStockInventory } from "../services/stockInventoryApi";
 
 export default function StockInventoryPage() {
   const [filters, setFilters] = useState(null);
@@ -14,23 +14,26 @@ export default function StockInventoryPage() {
   useEffect(() => {
     if (!filters) return;
 
-    axios.get("http://localhost:8080/api/stock-inventory", {
-      params: {
-        ...filters,
-        page,
-        size
-      },
-      headers: { "Cache-Control": "no-cache" }
-    }).then(res => {
-      setRows(res.data.content);
-      setTotal(res.data.totalElements);
-    });
+    fetchStockInventory({ filters, page, size })
+      .then(res => {
+        setRows(res.data.content || []);
+        setTotal(res.data.totalElements || 0);
+      })
+      .catch(err => {
+        console.error("Failed to fetch stock inventory", err);
+        setRows([]);
+        setTotal(0);
+      });
+
   }, [filters, page, size]);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 3 }}>
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom>Stock Inventory</Typography>
+        <Typography variant="h5" gutterBottom>
+          Stock Inventory
+        </Typography>
+
         <Typography variant="body2" color="text.secondary" gutterBottom>
           View and manage your current stock levels across all categories and warehouses.
         </Typography>
@@ -40,7 +43,7 @@ export default function StockInventoryPage() {
         <InventoryFilters
           onChange={(f) => {
             setFilters(f);
-            setPage(0); // reset page on filter change
+            setPage(0);
           }}
         />
 

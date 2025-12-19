@@ -1,136 +1,130 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Container, Paper, Typography, Divider, Button } from "@mui/material";
 import StockAdjustmentForm from "../components/StockAdjustment/StockAdjustmentForm";
 import StockAdjustmentPreview from "../components/StockAdjustment/StockAdjustmentPreview";
+import apiClient from "../services/apiClient";
 
 /**
- * Main page for manual stock adjustments: contains form (left) and live preview (below)
- * Allows adding or reducing stock quantities with reasons and references.
+ * Main page for manual stock adjustments
  */
 export default function StockAdjustmentPage() {
+  const initialItem = {
+    itemId: "",
+    itemName: "",
+    category: "",
+    currentStock: "",
+    adjustmentQty: "",
+    reason: "",
+    finalStock: ""
+  };
+
   const [form, setForm] = useState({
     adjustmentId: "",
     adjustmentDate: new Date().toISOString().slice(0, 10),
-    adjustmentType: "ADD", // "ADD" or "REDUCE"
+    adjustmentType: "ADD", // ADD | REDUCE
     warehouse: "",
     reference: "",
     notes: "",
-    items: [
-      { itemId: "", itemName: "", currentStock: "", adjustmentQty: "", reason: "", finalStock: "", category: "" }
-    ]
+    items: [initialItem]
   });
 
-  // Sample inventory items for autocomplete - replace with actual inventory API later
-  const sampleItems = [
-    { id: 1, name: "POLISHED GRANITE SLABS (18MM)", currentStock: 150, unit: "SFT" },
-    { id: 2, name: "LATICRETE 315 PLUS (20KG)", currentStock: 25, unit: "PCS" },
-    { id: 3, name: "SPACER", currentStock: 500, unit: "PCS" },
-    { id: 4, name: "MARBLE TILES", currentStock: 200, unit: "SFT" },
-    { id: 5, name: "GRANITE COUNTERTOPS", currentStock: 10, unit: "PCS" }
-  ];
+  const [categories, setCategories] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
 
-  // Sample warehouses
-  const sampleWarehouses = [
-    { id: 1, name: "Main Warehouse" },
-    { id: 2, name: "Showroom Warehouse" },
-    { id: 3, name: "Factory Warehouse" }
-  ];
+  /* Load masters */
+  useEffect(() => {
+    apiClient.get("/api/categories").then(r => setCategories(r.data));
+    apiClient.get("/api/warehouses").then(r => setWarehouses(r.data));
+  }, []);
 
-  // Update field generic
-  const updateField = (key, value) => setForm((p) => ({ ...p, [key]: value }));
+  /* Generic field update */
+  const updateField = (key, value) =>
+    setForm(p => ({ ...p, [key]: value }));
 
-  // Update an item row
+  /* Update item row */
   const updateItem = (index, key, value) => {
     const items = [...form.items];
     items[index] = { ...items[index], [key]: value };
 
-    // Auto compute final stock when adjustment quantity changes
     if (key === "adjustmentQty" || key === "currentStock") {
-      const currentStock = parseFloat(items[index].currentStock || 0);
-      const adjustmentQty = parseFloat(items[index].adjustmentQty || 0);
-      const adjustmentType = form.adjustmentType;
+      const cs = parseFloat(items[index].currentStock || 0);
+      const aq = parseFloat(items[index].adjustmentQty || 0);
 
-      if (!isNaN(currentStock) && !isNaN(adjustmentQty)) {
-        if (adjustmentType === "ADD") {
-          items[index].finalStock = (currentStock + adjustmentQty).toFixed(2);
-        } else if (adjustmentType === "REDUCE") {
-          items[index].finalStock = Math.max(0, currentStock - adjustmentQty).toFixed(2);
-        }
+      if (!isNaN(cs) && !isNaN(aq)) {
+        items[index].finalStock =
+          form.adjustmentType === "ADD"
+            ? (cs + aq).toFixed(2)
+            : Math.max(0, cs - aq).toFixed(2);
       }
     }
 
-    setForm((p) => ({ ...p, items }));
+    setForm(p => ({ ...p, items }));
   };
 
-  // When adjustment type changes, recalculate all final stocks
+  /* Recalculate when ADD / REDUCE changes */
   useEffect(() => {
     const items = form.items.map(item => {
-      const currentStock = parseFloat(item.currentStock || 0);
-      const adjustmentQty = parseFloat(item.adjustmentQty || 0);
+      const cs = parseFloat(item.currentStock || 0);
+      const aq = parseFloat(item.adjustmentQty || 0);
 
-      if (!isNaN(currentStock) && !isNaN(adjustmentQty)) {
-        if (form.adjustmentType === "ADD") {
-          item.finalStock = (currentStock + adjustmentQty).toFixed(2);
-        } else if (form.adjustmentType === "REDUCE") {
-          item.finalStock = Math.max(0, currentStock - adjustmentQty).toFixed(2);
-        }
+      if (!isNaN(cs) && !isNaN(aq)) {
+        item.finalStock =
+          form.adjustmentType === "ADD"
+            ? (cs + aq).toFixed(2)
+            : Math.max(0, cs - aq).toFixed(2);
       }
       return item;
     });
 
-    setForm((p) => ({ ...p, items }));
+    setForm(p => ({ ...p, items }));
   }, [form.adjustmentType]);
 
-  const addItemRow = () => {
-    setForm((p) => ({
-      ...p,
-      items: [...p.items, { itemId: "", itemName: "", currentStock: "", adjustmentQty: "", reason: "", finalStock: "", category: "" }]
-    }));
-  };
+  const addItemRow = () =>
+    setForm(p => ({ ...p, items: [...p.items, initialItem] }));
 
-  const removeItemRow = (index) => {
-    const items = form.items.filter((_, i) => i !== index);
-    setForm((p) => ({ ...p, items }));
-  };
+  const removeItemRow = index =>
+    setForm(p => ({ ...p, items: p.items.filter((_, i) => i !== index) }));
 
-  // Print only preview area by class name .printable-area
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
 
-  // Handle save adjustment
   const handleSave = () => {
-    // Here you would typically send the data to your backend API
     console.log("Saving stock adjustment:", form);
-    alert("Stock adjustment saved successfully! (Implement API call)");
+    alert("Stock adjustment saved successfully!");
+    // TODO: POST /api/stock-adjustments
   };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 3 }}>
-      {/* Print CSS is injected here to keep everything self-contained */}
+      {/* Print styles */}
       <style>{`
         @media print {
           body * { visibility: hidden; }
           .printable-area, .printable-area * { visibility: visible; }
-          .printable-area { position: absolute; left: 0; top: 0; width: 100%; }
+          .printable-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
         }
-
-        /* small tweak so preview looks good on screen */
         .adjustment-preview-root { margin-top: 16px; }
       `}</style>
 
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom>Manual Stock Adjustment</Typography>
+        <Typography variant="h5" gutterBottom>
+          Manual Stock Adjustment
+        </Typography>
+
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          Adjust stock levels by adding or reducing quantities. Live preview below updates instantly.
+          Adjust stock levels by adding or reducing quantities. Live preview updates instantly.
         </Typography>
 
         <Divider sx={{ mb: 2 }} />
 
         <StockAdjustmentForm
           form={form}
-          sampleItems={sampleItems}
-          sampleWarehouses={sampleWarehouses}
+          categories={categories}
+          warehouses={warehouses}
           updateField={updateField}
           updateItem={updateItem}
           addItemRow={addItemRow}
@@ -138,7 +132,10 @@ export default function StockAdjustmentPage() {
         />
 
         <Box className="adjustment-preview-root">
-          <Typography variant="h6" sx={{ mt: 2 }}>Stock Adjustment Preview</Typography>
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Stock Adjustment Preview
+          </Typography>
+
           <StockAdjustmentPreview data={form} className="printable-area" />
 
           <Box sx={{ mt: 2, display: "flex", gap: 2, flexWrap: "wrap" }}>
@@ -153,7 +150,7 @@ export default function StockAdjustmentPage() {
             <Button
               variant="outlined"
               color="error"
-              onClick={() => {
+              onClick={() =>
                 setForm({
                   adjustmentId: "",
                   adjustmentDate: new Date().toISOString().slice(0, 10),
@@ -161,9 +158,9 @@ export default function StockAdjustmentPage() {
                   warehouse: "",
                   reference: "",
                   notes: "",
-                  items: [{ itemId: "", itemName: "", currentStock: "", adjustmentQty: "", reason: "", finalStock: "", category: "" }]
-                });
-              }}
+                  items: [initialItem]
+                })
+              }
             >
               Clear All
             </Button>
