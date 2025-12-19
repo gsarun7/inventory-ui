@@ -239,9 +239,12 @@ export default function InvoicePreview({ data }) {
         boxSizing: "border-box"
       }}>
         <Grid item xs={6}>
-          <Typography sx={fontStyles.footerBold}>Declaration</Typography>
-          <Typography sx={fontStyles.footer}>We declare that this invoice shows the actual price of</Typography>
-          <Typography sx={fontStyles.footer}>the goods described and that all particulars are true and correct.</Typography>
+          <Typography sx={fontStyles.footerBold}>Customer Acknowledgement / Terms</Typography>
+          <Typography sx={fontStyles.footer}>1. Tile boxes once purchased are non-refundable after 20 days.</Typography>
+          <Typography sx={fontStyles.footer}>2. Loose, broken, or wet tiles will not be accepted for return.</Typography>
+          <Typography sx={fontStyles.footer}>3. Customers must verify tile boxes before leaving the premises.</Typography>
+          <Typography sx={fontStyles.footer}>4. We are not responsible for damages after delivery.</Typography>
+          <Typography sx={fontStyles.footer}>5. Loading, unloading, transport, and GST are charged separately.</Typography>
         </Grid>
 
         <Grid item xs={6} sx={{ textAlign: "right" }}>
