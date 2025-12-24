@@ -2,17 +2,10 @@ import React from "react";
 import { Grid, TextField, Button, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Box, Autocomplete, FormControl, Select, MenuItem } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import CategorySelect from "../common/CategorySelect";
+import ProductSelect from "../common/ProductSelect";
 
-const categories = [
-  "Granite",
-  "Tiles",
-  "Marble",
-  "Adhesive",
-  "Grout",
-  "Tools",
-  "Accessories",
-  "Other"
-];
+
 
 /**
  * PurchaseInvoiceForm
@@ -21,7 +14,7 @@ const categories = [
  * - sampleProducts: array for autocomplete suggestions
  * - updateField, updateItem, addItemRow, removeItemRow
  */
-export default function PurchaseInvoiceForm({ form, sampleProducts, updateField, updateItem, addItemRow, removeItemRow }) {
+export default function PurchaseInvoiceForm({ form,  updateField, updateItem, addItemRow, removeItemRow }) {
   return (
     <Box>
       <Grid container spacing={2}>
@@ -84,18 +77,14 @@ export default function PurchaseInvoiceForm({ form, sampleProducts, updateField,
                 <TableCell>{idx + 1}</TableCell>
 
                 <TableCell sx={{ minWidth: 100 }}>
-                  <FormControl size="small" fullWidth>
-                    <Select
-                      value={row.category || ""}
-                      onChange={(e) => updateItem(idx, "category", e.target.value)}
-                      displayEmpty
-                    >
-                      <MenuItem value=""><em>Select</em></MenuItem>
-                      {categories.map((cat) => (
-                        <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <CategorySelect
+                    value={row.category}
+                    onChange={(category) =>
+                      updateItem(idx, "category", category)
+                    }
+                  />
+
+
                 </TableCell>
 
                 <TableCell sx={{ maxWidth: 120 }}>
@@ -103,23 +92,34 @@ export default function PurchaseInvoiceForm({ form, sampleProducts, updateField,
                 </TableCell>
 
                 <TableCell sx={{ minWidth: 260 }}>
-                  <Autocomplete
-                    freeSolo
-                    options={sampleProducts}
-                    getOptionLabel={(opt) => `${opt.name} - ${opt.brand} - ${opt.size} - ${opt.grade}`}
-                    onChange={(e, selected) => {
-                      if (selected && typeof selected === "object") {
-                        updateItem(idx, "description", selected.name || "");
-                        updateItem(idx, "brand", selected.brand || "");
-                        updateItem(idx, "hsn", selected.hsn || "");
-                        updateItem(idx, "size", selected.size || "");
-                        updateItem(idx, "grade", selected.grade || "");
-                        updateItem(idx, "unit", selected.unit || "");
+                  <ProductSelect
+                    
+                    categoryId={row.category}
+                    value={row.productId ?? null}
+                    onChange={(productId, product) => {
+
+                      if (!product) {
+                        updateItem(idx, "productId", "");
+                        updateItem(idx, "description", "");
+                        updateItem(idx, "hsn", "");
+                        updateItem(idx, "brand", "");
+                        updateItem(idx, "size", "");
+                        updateItem(idx, "grade", "");
+                        updateItem(idx, "rate", "");
+                        updateItem(idx, "unit", "");
+                        updateItem(idx, "amount", "");
+                        return;
                       }
+
+                      updateItem(idx, "productId", product.id);
+                      updateItem(idx, "description", product.name);
+                      updateItem(idx, "hsn", product.hsn);
+                      updateItem(idx, "brand", product.brand);
+                      updateItem(idx, "size", product.size);
+                      updateItem(idx, "grade", product.grade);
+                      updateItem(idx, "rate", product.rate);
+                      updateItem(idx, "unit", product.unit);
                     }}
-                    renderInput={(params) => (
-                      <TextField {...params} size="small" value={row.description || ""} onChange={(e) => updateItem(idx, "description", e.target.value)} placeholder="Type or select product" />
-                    )}
                   />
                 </TableCell>
 

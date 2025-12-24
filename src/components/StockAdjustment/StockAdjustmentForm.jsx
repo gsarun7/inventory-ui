@@ -1,4 +1,5 @@
 import React from "react";
+import { fetchCurrentStock } from "../../services/api.js";
 import {
   Box,
   Typography,
@@ -21,10 +22,8 @@ import AddIcon from "@mui/icons-material/Add";
 import CategorySelect from "../common/CategorySelect";
 import ProductSelect from "../common/ProductSelect";
 
-
 export default function StockAdjustmentForm({
   form,
-  categories,
   warehouses,
   updateField,
   updateItem,
@@ -34,7 +33,7 @@ export default function StockAdjustmentForm({
   return (
     <Box>
 
-      {/* ---------- Header ---------- */}
+      {/* ================= Header ================= */}
       <Typography variant="h6" gutterBottom>
         Adjustment Details
       </Typography>
@@ -124,7 +123,7 @@ export default function StockAdjustmentForm({
         </Grid>
       </Grid>
 
-      {/* ---------- Items Table ---------- */}
+      {/* ================= Items ================= */}
       <Typography variant="h6" gutterBottom>
         Items to Adjust
       </Typography>
@@ -138,44 +137,57 @@ export default function StockAdjustmentForm({
             <TableCell>Adjust</TableCell>
             <TableCell>Reason</TableCell>
             <TableCell>Final</TableCell>
-            <TableCell width={60}></TableCell>
+            <TableCell width={60} />
           </TableRow>
         </TableHead>
 
         <TableBody>
           {form.items.map((item, index) => (
-            <TableRow key={`${item.itemId || "row"}-${index}`}>
-              {/* Category */}
-              <TableCell width={160}>
+            <TableRow key={index}>
+              {/* -------- Category -------- */}
+              <TableCell width={180}>
                 <CategorySelect
-                  value={item.category}
-                  onChange={(v) => {
-                    updateItem(index, "category", v);
-                    updateItem(index, "itemId", "");
-                    updateItem(index, "itemName", "");
-                    updateItem(index, "currentStock", "");
+                  value={item.categoryId}
+                  onChange={(newCategoryId) => {
+                    if (newCategoryId !== item.categoryId) {
+                      updateItem(index, "categoryId", newCategoryId);
+
+                    }
                   }}
                 />
               </TableCell>
 
-              {/* Product */}
-              <TableCell width={220}>
+              {/* -------- Product -------- */}
+              <TableCell width={240}>
                 <ProductSelect
-                  categoryId={item.category}
+                  categoryId={item.categoryId}
                   value={item.itemId}
-                  onChange={(v, product) => {
-                    updateItem(index, "itemId", v);
-                    updateItem(index, "itemName", product?.name || "");
-                    updateItem(
-                      index,
-                      "currentStock",
-                      product?.currentStock || 0
-                    );
+                  onChange={async (productId, product) => {
+                    if (!product) {
+                      updateItem(index, {
+                        itemId: "",
+                        itemName: "",
+                        currentStock: "0",
+                        finalStock: ""
+                      });
+                      return;
+                    }
+
+               const res = await fetchCurrentStock(productId, form.warehouse);
+
+                    updateItem(index, {
+                      itemId: productId,
+                      itemName: product.name,
+                      currentStock: res.data.toString(),
+                      adjustmentQty: "",
+                      finalStock: res.data.toString()
+                    });
                   }}
+
                 />
               </TableCell>
 
-              {/* Current Stock */}
+              {/* -------- Current -------- */}
               <TableCell width={90}>
                 <TextField
                   size="small"
@@ -184,7 +196,7 @@ export default function StockAdjustmentForm({
                 />
               </TableCell>
 
-              {/* Adjustment Qty */}
+              {/* -------- Adjustment -------- */}
               <TableCell width={90}>
                 <TextField
                   size="small"
@@ -196,7 +208,7 @@ export default function StockAdjustmentForm({
                 />
               </TableCell>
 
-              {/* Reason */}
+              {/* -------- Reason -------- */}
               <TableCell>
                 <TextField
                   size="small"
@@ -207,7 +219,7 @@ export default function StockAdjustmentForm({
                 />
               </TableCell>
 
-              {/* Final Stock */}
+              {/* -------- Final -------- */}
               <TableCell width={90}>
                 <TextField
                   size="small"
@@ -216,7 +228,7 @@ export default function StockAdjustmentForm({
                 />
               </TableCell>
 
-              {/* Delete */}
+              {/* -------- Delete -------- */}
               <TableCell>
                 <IconButton
                   color="error"

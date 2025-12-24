@@ -7,7 +7,17 @@ import ReturnPreview from "../components/Returns/ReturnPreview";
  * Main page for product returns after sale: contains form and live preview
  * Handles customer returns, inventory restocking, and refund processing.
  */
+import apiClient from "../services/apiClient";
+
+
 export default function ReturnPage() {
+
+  const [categories, setCategories] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
+  const [invoices, setInvoices] = useState([]);
+  const [soldItems, setSoldItems] = useState([]);
+
+
   const [form, setForm] = useState({
     returnId: "",
     returnDate: new Date().toISOString().slice(0, 10),
@@ -22,24 +32,36 @@ export default function ReturnPage() {
     refundAmount: "0.00",
     notes: "",
     items: [
-      { itemId: "", itemName: "", soldQty: "", returnQty: "", unitPrice: "", totalPrice: "", condition: "GOOD", category: "" }
+      {
+        warehouse: "",
+        categoryId: "",
+        itemId: "",
+        itemName: "",
+        soldQty: 0,
+        returnQty: 0,
+        unitPrice: 0,
+        totalPrice: 0,
+        condition: "GOOD"
+      }
     ]
   });
 
+  useEffect(() => {
+    apiClient.get("/api/categories").then(r => setCategories(r.data));
+    apiClient.get("/api/warehouses").then(r => setWarehouses(r.data));
+    //apiClient.get("/api/sales/invoices").then(r => setInvoices(r.data));
+  }, []);
   // Sample sold items for autocomplete - replace with actual sales API later
-  const sampleSoldItems = [
-    { id: 1, name: "POLISHED GRANITE SLABS (18MM)", soldQty: 50, unitPrice: 60.17, invoiceNo: "INV-001" },
-    { id: 2, name: "LATICRETE 315 PLUS (20KG)", soldQty: 10, unitPrice: 92.23, invoiceNo: "INV-002" },
-    { id: 3, name: "SPACER", soldQty: 100, unitPrice: 497.81, invoiceNo: "INV-001" },
-    { id: 4, name: "MARBLE TILES", soldQty: 30, unitPrice: 45.50, invoiceNo: "INV-003" }
-  ];
 
   // Sample invoices for reference
-  const sampleInvoices = [
-    { id: "INV-001", date: "2025-12-15", customer: "John Doe", total: 15000.00 },
-    { id: "INV-002", date: "2025-12-16", customer: "Jane Smith", total: 8500.00 },
-    { id: "INV-003", date: "2025-12-17", customer: "Bob Johnson", total: 12000.00 }
-  ];
+  useEffect(() => {
+    if (!form.originalInvoiceNo) return;
+
+    apiClient
+      .get(`/api/sales/invoices/${form.originalInvoiceNo}/items`)
+      .then(r => setSoldItems(r.data));
+
+  }, [form.originalInvoiceNo]);
 
   // Update field generic
   const updateField = (key, value) => setForm((p) => ({ ...p, [key]: value }));
@@ -65,7 +87,7 @@ export default function ReturnPage() {
   // Auto-fill customer details when invoice is selected
   useEffect(() => {
     if (form.originalInvoiceNo) {
-      const selectedInvoice = sampleInvoices.find(inv => inv.id === form.originalInvoiceNo);
+      const selectedInvoice = invoices.find(inv => inv.id === form.originalInvoiceNo);
       if (selectedInvoice) {
         setForm((p) => ({
           ...p,
@@ -139,8 +161,10 @@ export default function ReturnPage() {
 
         <ReturnForm
           form={form}
-          sampleSoldItems={sampleSoldItems}
-          sampleInvoices={sampleInvoices}
+          categories={categories}
+          warehouses={warehouses}
+          soldItems={soldItems}
+          invoices={invoices}
           updateField={updateField}
           updateItem={updateItem}
           addItemRow={addItemRow}

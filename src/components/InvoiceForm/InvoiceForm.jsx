@@ -17,19 +17,11 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const categories = [
-  "Granite",
-  "Tiles",
-  "Marble",
-  "Adhesive",
-  "Grout",
-  "Tools",
-  "Accessories",
-  "Other"
-];
-
+import CategorySelect from "../common/CategorySelect";
+import ProductSelect from "../common/ProductSelect";
 export default function InvoiceForm({
   form,
+  categories,
   productList,
   updateField,
   updateItem,
@@ -99,7 +91,6 @@ export default function InvoiceForm({
             helperText={errors.motorVehicleNo}
           />
         </Grid>
-
 
         <Grid item xs={12} sm={4}>
           <TextField
@@ -184,20 +175,38 @@ export default function InvoiceForm({
 
       {/* Items table */}
       <div style={{ marginTop: 16 }}>
-        {errors.items && <div style={{ color: '#d32f2f', fontSize: 12, marginBottom: 8 }}>{errors.items}</div>}
+        {errors.items && (
+          <div style={{ color: "#d32f2f", fontSize: 12, marginBottom: 8 }}>
+            {errors.items}
+          </div>
+        )}
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Sr</TableCell>
-              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Estimated Area</TableCell>
-              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Usage</TableCell>
-              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Category</TableCell>
-              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Description of Goods</TableCell>
-              <TableCell sx={{ borderRight: '1px solid #ddd' }}>HSN/SAC</TableCell>
-              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Quantity</TableCell>
-              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Rate</TableCell>
-              <TableCell sx={{ borderRight: '1px solid #ddd' }}>per</TableCell>
-              <TableCell sx={{ borderRight: '1px solid #ddd' }}>Amount</TableCell>
+              <TableCell sx={{ borderRight: "1px solid #ddd" }}>Sr</TableCell>
+              <TableCell sx={{ borderRight: "1px solid #ddd" }}>
+                Estimated Area
+              </TableCell>
+              <TableCell sx={{ borderRight: "1px solid #ddd" }}>
+                Usage
+              </TableCell>
+              <TableCell sx={{ borderRight: "1px solid #ddd" }}>
+                Category
+              </TableCell>
+              <TableCell sx={{ borderRight: "1px solid #ddd" }}>
+                Description of Goods
+              </TableCell>
+              <TableCell sx={{ borderRight: "1px solid #ddd" }}>
+                HSN/SAC
+              </TableCell>
+              <TableCell sx={{ borderRight: "1px solid #ddd" }}>
+                Quantity
+              </TableCell>
+              <TableCell sx={{ borderRight: "1px solid #ddd" }}>Rate</TableCell>
+              <TableCell sx={{ borderRight: "1px solid #ddd" }}>per</TableCell>
+              <TableCell sx={{ borderRight: "1px solid #ddd" }}>
+                Amount
+              </TableCell>
               <TableCell />
             </TableRow>
           </TableHead>
@@ -205,41 +214,68 @@ export default function InvoiceForm({
           <TableBody>
             {form.items.map((item, idx) => (
               <TableRow key={idx}>
-                <TableCell sx={{ borderRight: '1px solid #ddd' }}>{idx + 1}</TableCell>
-                <TableCell sx={{ borderRight: '1px solid #ddd' }}>
+                <TableCell sx={{ borderRight: "1px solid #ddd" }}>
+                  {idx + 1}
+                </TableCell>
+                <TableCell sx={{ borderRight: "1px solid #ddd" }}>
                   <TextField
                     size="small"
                     value={item.estimatedArea || ""}
-                    onChange={(e) => updateItem(idx, "estimatedArea", e.target.value)}
+                    onChange={(e) =>
+                      updateItem(idx, "estimatedArea", e.target.value)
+                    }
                   />
                 </TableCell>
-                <TableCell sx={{ borderRight: '1px solid #ddd' }}>
+                <TableCell sx={{ borderRight: "1px solid #ddd" }}>
                   <TextField
                     size="small"
                     value={item.usage || ""}
                     onChange={(e) => updateItem(idx, "usage", e.target.value)}
                   />
                 </TableCell>
-                <TableCell sx={{ borderRight: '1px solid #ddd', minWidth: 120 }}>
-                  <FormControl size="small" fullWidth>
-                    <Select
-                      value={item.category || ""}
-                      onChange={(e) => updateItem(idx, "category", e.target.value)}
-                      displayEmpty
-                    >
-                      <MenuItem value=""><em>Select</em></MenuItem>
-                      {categories.map((cat) => (
-                        <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                <TableCell
+                  sx={{ borderRight: "1px solid #ddd", minWidth: 120 }}
+                >
+                  <CategorySelect
+                    value={item.categoryId}
+                    onChange={(newCategoryId) => {
+                      if (newCategoryId !== item.categoryId) {
+                        updateItem(idx, "categoryId", newCategoryId);
+                      }
+                    }}
+                  />
                 </TableCell>
-                <TableCell style={{ minWidth: 220 }} sx={{ borderRight: '1px solid #ddd' }}>
-                   <Autocomplete options={productList} getOptionLabel={(opt) => typeof opt === "string" ? opt : opt.name} value={productList.find(p => p.name === item.name) || null} freeSolo size="small" onChange={(e, val) => { if (val && typeof val === "object") { updateItem(idx, "name", val.name); updateItem(idx, "hsn", val.hsn); } else { updateItem(idx, "name", val || ""); } }} renderInput={(params) => (<TextField {...params} placeholder="Select / Type product" />)}
-                    /> </TableCell>
-  
+                <TableCell
+                  style={{ minWidth: 220 }}
+                  sx={{ borderRight: "1px solid #ddd" }}
+                >
+                  <ProductSelect
+                    categoryId={item.categoryId}
+                    value={item.itemId}
+                    onChange={async (productId, product) => {
+                      if (!product) {
+                        updateItem(idx, {
+                          itemId: productId,
+                          itemName: product.name,
+                        });
+                        return;
+                      }
 
-                <TableCell sx={{ borderRight: '1px solid #ddd' }}>
+                      // const res = await fetchCurrentStock(
+                      //   productId,
+                      //   form.warehouse
+                      // );
+
+                      updateItem(idx, {
+                        itemId: productId,
+                        itemName: product.name,
+                        hsn: product.hsn || "",
+                      });
+                    }}
+                  />
+                </TableCell>
+
+                <TableCell sx={{ borderRight: "1px solid #ddd" }}>
                   <TextField
                     size="small"
                     value={item.hsn}
@@ -247,7 +283,7 @@ export default function InvoiceForm({
                   />
                 </TableCell>
 
-                <TableCell sx={{ borderRight: '1px solid #ddd' }}>
+                <TableCell sx={{ borderRight: "1px solid #ddd" }}>
                   <TextField
                     size="small"
                     type="number"
@@ -255,7 +291,7 @@ export default function InvoiceForm({
                     onChange={(e) => updateItem(idx, "qty", e.target.value)}
                   />
                 </TableCell>
-                <TableCell sx={{ borderRight: '1px solid #ddd' }}>
+                <TableCell sx={{ borderRight: "1px solid #ddd" }}>
                   <TextField
                     size="small"
                     type="number"
@@ -263,15 +299,14 @@ export default function InvoiceForm({
                     onChange={(e) => updateItem(idx, "rate", e.target.value)}
                   />
                 </TableCell>
-                <TableCell sx={{ borderRight: '1px solid #ddd' }}>
+                <TableCell sx={{ borderRight: "1px solid #ddd" }}>
                   <TextField
                     size="small"
                     value={item.per}
                     onChange={(e) => updateItem(idx, "per", e.target.value)}
-
                   />
                 </TableCell>
-                <TableCell sx={{ borderRight: '1px solid #ddd' }}>
+                <TableCell sx={{ borderRight: "1px solid #ddd" }}>
                   <TextField size="small" value={item.amount} disabled />
                 </TableCell>
 
@@ -294,7 +329,12 @@ export default function InvoiceForm({
 
       {/* totals quick display */}
       <div style={{ marginTop: 12, display: "flex", gap: 24 }}>
-        <TextField label="Subtotal" size="small" value={form.subtotal} disabled />
+        <TextField
+          label="Subtotal"
+          size="small"
+          value={form.subtotal}
+          disabled
+        />
         <TextField
           label="GST Amount"
           type="number"
@@ -302,7 +342,12 @@ export default function InvoiceForm({
           value={form.gstAmount}
           onChange={(e) => updateField("gstAmount", e.target.value)}
         />
-        <TextField label="Grand Total" size="small" value={form.grandTotal} disabled />
+        <TextField
+          label="Grand Total"
+          size="small"
+          value={form.grandTotal}
+          disabled
+        />
       </div>
     </div>
   );

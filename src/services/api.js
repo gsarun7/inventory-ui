@@ -83,7 +83,7 @@ export const searchProducts = (query) =>
 
 /* Current stock */
 export const fetchCurrentStock = (productId, warehouseId) =>
-  apiClient.get("/api/stock/current", {
+  apiClient.get("/api/stocks/current", {
     params: { productId, warehouseId }
   });
 

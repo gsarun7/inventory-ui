@@ -19,7 +19,7 @@ export default function PurchaseInvoicePage() {
     remarks: "",
     gstAmount: "0.00",
     items: [
-      { hsn: "", description: "", brand: "", size: "", grade: "", qty: "", unit: "", rate: "", amount: "", category: "" }
+      { hsn: "", description: "", brand: "", size: "", grade: "", qty: "", unit: "", rate: "", amount: "", category: "" ,productId: ""}
     ],
     subtotal: "0.00",
     grandTotal: "0.00",
@@ -27,12 +27,7 @@ export default function PurchaseInvoicePage() {
   });
 
   // simple sample product list for autocomplete - replace with inventory snapshot from backend later
-  const sampleProducts = [
-    { id: 1, name: "POLISHED GRANITE SLABS (18MM)", brand: "MONOLITH", hsn: "68022310", size: "1200x1800", grade: "PRE-I", rate: 60.17, unit: "SFT" },
-    { id: 2, name: "LATICRETE 315 PLUS (20KG)", brand: "MYK", hsn: "32141000", size: "", grade: "", rate: 92.23, unit: "PCS" },
-    { id: 3, name: "SPACER", brand: "GENERIC", hsn: "35069900", size: "", grade: "", rate: 497.81, unit: "PCS" },
-  ];
-
+  
   // update field generic
   const updateField = (key, value) => setForm((p) => ({ ...p, [key]: value }));
 
@@ -102,7 +97,6 @@ export default function PurchaseInvoicePage() {
 
         <PurchaseInvoiceForm
           form={form}
-          sampleProducts={sampleProducts}
           updateField={updateField}
           updateItem={updateItem}
           addItemRow={addItemRow}

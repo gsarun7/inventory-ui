@@ -6,22 +6,17 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-
-const categories = [
-  "Granite",
-  "Tiles",
-  "Marble",
-  "Adhesive",
-  "Grout",
-  "Tools",
-  "Accessories",
-  "Other"
-];
+import CategorySelect from "../common/CategorySelect";
+import ProductSelect from "../common/ProductSelect";
+import WarehouseSelect from "../common/WarehouseSelect";
+import { fetchCurrentStock } from "../../services/api.js";
 
 export default function ReturnForm({
   form,
-  sampleSoldItems,
-  sampleInvoices,
+  categories,
+  warehouses,
+  soldItems,
+  invoices,
   updateField,
   updateItem,
   addItemRow,
@@ -51,10 +46,28 @@ export default function ReturnForm({
           />
         </Grid>
         <Grid item xs={12} md={3}>
+          <FormControl fullWidth>
+            <InputLabel>Warehouse</InputLabel>
+            <Select
+              value={form.warehouse ?? ""}
+              label="Warehouse"
+              onChange={(e) =>
+                updateField("warehouse", e.target.value)
+              }
+            >
+              {warehouses.map(w => (
+                <MenuItem key={w.id} value={w.id}>
+                  {w.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} md={3}>
           <Autocomplete
-            options={sampleInvoices}
+            options={invoices}
             getOptionLabel={(option) => `${option.id} - ${option.customer}`}
-            value={sampleInvoices.find(inv => inv.id === form.originalInvoiceNo) || null}
+            value={invoices.find(inv => inv.id === form.originalInvoiceNo) || null}
             onChange={(e, val) => updateField("originalInvoiceNo", val?.id || "")}
             renderInput={(params) => (
               <TextField {...params} label="Original Invoice" />
@@ -180,8 +193,11 @@ export default function ReturnForm({
       <Table size="small">
         <TableHead>
           <TableRow>
+
             <TableCell>Category</TableCell>
-            <TableCell>Item</TableCell>
+
+            <TableCell>Product</TableCell>
+
             <TableCell>Sold Qty</TableCell>
             <TableCell>Return Qty</TableCell>
             <TableCell>Unit Price</TableCell>
@@ -194,36 +210,46 @@ export default function ReturnForm({
           {form.items.map((item, index) => (
             <TableRow key={index}>
               <TableCell>
-                <FormControl size="small" sx={{ minWidth: 100 }}>
-                  <Select
-                    value={item.category || ""}
-                    onChange={(e) => updateItem(index, "category", e.target.value)}
-                    displayEmpty
-                  >
-                    <MenuItem value=""><em>Select</em></MenuItem>
-                    {categories.map((cat) => (
-                      <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </TableCell>
-              <TableCell>
-                <Autocomplete
-                  options={sampleSoldItems}
-                  getOptionLabel={(option) => option.name}
-                  value={sampleSoldItems.find(i => i.id === item.itemId) || null}
-                  onChange={(e, val) => {
-                    updateItem(index, "itemId", val?.id || "");
-                    updateItem(index, "itemName", val?.name || "");
-                    updateItem(index, "soldQty", val?.soldQty || "");
-                    updateItem(index, "unitPrice", val?.unitPrice || "");
+
+                <CategorySelect
+                  value={item.categoryId}
+                  onChange={(newCategoryId) => {
+                    if (newCategoryId !== item.categoryId) {
+                      updateItem(index, "categoryId", newCategoryId);
+
+                    }
                   }}
-                  renderInput={(params) => (
-                    <TextField {...params} size="small" placeholder="Select returned item..." />
-                  )}
-                  sx={{ minWidth: 200 }}
                 />
               </TableCell>
+              <TableCell>
+                <ProductSelect
+                  categoryId={item.categoryId}
+                  value={item.itemId ?? null}   // 👈 must be null, NOT ""
+                  onChange={async (productId, product) => {
+                    if (!product) {
+                      updateItem(index, {
+                        itemId: "",
+                        itemName: "",
+                        // soldQty: 1,
+                        // unitPrice: 0,
+                        // totalPrice: 0
+                      });
+                      return;
+                    }
+                    const res = await fetchCurrentStock(productId, form.warehouse);
+                    updateItem(index, {
+                      itemId: productId,
+                      itemName: product.name,
+                      // soldQty: res.data.toString(),
+                      // unitPrice: res.data.toString(),
+                      // totalPrice:res.data.toString()
+                    });
+                  }}
+                />
+
+
+              </TableCell>
+
               <TableCell>
                 <TextField
                   size="small"

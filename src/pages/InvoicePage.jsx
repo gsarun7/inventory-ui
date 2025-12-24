@@ -1,7 +1,22 @@
 import { useRef, useState, useEffect } from "react";
-import { Box, Button, Divider, Container, Paper, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Divider,
+  Container,
+  Paper,
+  Typography,
+} from "@mui/material";
 import * as XLSX from "xlsx";
-import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun } from "docx";
+import {
+  Document,
+  Packer,
+  Paragraph,
+  Table,
+  TableRow,
+  TableCell,
+  TextRun,
+} from "docx";
 import { saveAs } from "file-saver";
 import InvoiceForm from "../components/InvoiceForm/InvoiceForm";
 import InvoicePreview from "../components/InvoiceForm/InvoicePreview";
@@ -26,7 +41,18 @@ export default function InvoicePage() {
     gstPercent: 18,
     items: [
       // initial one row
-      { name: "", hsn: "", qty: "", rate: "", per: "", amount: "", estimatedArea: "", usage: "", category: "" },
+      {
+        itemId: "",
+        itemName: "",
+        hsn: "",
+        qty: "",
+        rate: "",
+        per: "",
+        amount: "",
+        estimatedArea: "",
+        usage: "",
+        categoryId: "",
+      },
     ],
     subtotal: "0.00",
     gstAmount: "0.00",
@@ -35,16 +61,10 @@ export default function InvoicePage() {
   });
 
   const [errors, setErrors] = useState({});
+  const [categories, setCategories] = useState([]);
+  const [productList, setProductList] = useState([]);
 
   // products sample for autocomplete
-  const productList = [
-    { name: "POLISHED GRANITE SLABS (18MM)", hsn: "68022310", rate: 60.17 },
-    { name: "LATICRETE 315 PLUS (20KG)", hsn: "32141000", rate: 92.23 },
-    { name: "SPACER", hsn: "35069900", rate: 497.81 },
-    { name: "ULTRA TECH - GROUT", hsn: "32141000", rate: 224.35 },
-    { name: "SUPER SET - 300ML", hsn: "34021140", rate: 115.0 },
-    { name: "BOND TILE SLOW", hsn: "38244000", rate: 1016.95 },
-  ];
 
   // calculate totals whenever items or gstAmount change
   useEffect(() => {
@@ -73,7 +93,23 @@ export default function InvoicePage() {
   };
 
   const addItem = () =>
-    setForm((p) => ({ ...p, items: [...p.items, { name: "", hsn: "", qty: "", rate: "", per: "", amount: "", estimatedArea: "", usage: "", category: "" }] }));
+    setForm((p) => ({
+      ...p,
+      items: [
+        ...p.items,
+        {
+          name: "",
+          hsn: "",
+          qty: "",
+          rate: "",
+          per: "",
+          amount: "",
+          estimatedArea: "",
+          usage: "",
+          category: "",
+        },
+      ],
+    }));
 
   const removeItem = (index) => {
     const newItems = [...form.items];
@@ -124,18 +160,41 @@ export default function InvoicePage() {
       "Eighteen",
       "Nineteen",
     ];
-    const b = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+    const b = [
+      "",
+      "",
+      "Twenty",
+      "Thirty",
+      "Forty",
+      "Fifty",
+      "Sixty",
+      "Seventy",
+      "Eighty",
+      "Ninety",
+    ];
 
     const numStr = num.toString();
     if (numStr.length > 9) return "Overflow";
 
-    const n = ("000000000" + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{3})$/);
+    const n = ("000000000" + num)
+      .substr(-9)
+      .match(/^(\d{2})(\d{2})(\d{2})(\d{3})$/);
     if (!n) return "";
     let str = "";
-    str += n[1] != 0 ? (a[Number(n[1])] || (b[n[1][0]] + " " + a[n[1][1]])) + " Crore " : "";
-    str += n[2] != 0 ? (a[Number(n[2])] || (b[n[2][0]] + " " + a[n[2][1]])) + " Lakh " : "";
-    str += n[3] != 0 ? (a[Number(n[3])] || (b[n[3][0]] + " " + a[n[3][1]])) + " Thousand " : "";
-    str += n[4] != 0 ? (a[Number(n[4])] || (b[n[4][0]] + " " + a[n[4][1]])) + " " : "";
+    str +=
+      n[1] != 0
+        ? (a[Number(n[1])] || b[n[1][0]] + " " + a[n[1][1]]) + " Crore "
+        : "";
+    str +=
+      n[2] != 0
+        ? (a[Number(n[2])] || b[n[2][0]] + " " + a[n[2][1]]) + " Lakh "
+        : "";
+    str +=
+      n[3] != 0
+        ? (a[Number(n[3])] || b[n[3][0]] + " " + a[n[3][1]]) + " Thousand "
+        : "";
+    str +=
+      n[4] != 0 ? (a[Number(n[4])] || b[n[4][0]] + " " + a[n[4][1]]) + " " : "";
     return str.trim() + " Only";
   }
 
@@ -146,7 +205,9 @@ export default function InvoicePage() {
           children: [
             new Paragraph({
               alignment: "center",
-              children: [new TextRun({ text: "TAX INVOICE", bold: true, size: 28 })],
+              children: [
+                new TextRun({ text: "TAX INVOICE", bold: true, size: 28 }),
+              ],
             }),
 
             new Paragraph(""),
@@ -214,7 +275,10 @@ export default function InvoicePage() {
             new Paragraph(`GST: ₹ ${data.gstAmount}`),
             new Paragraph({
               children: [
-                new TextRun({ text: `Grand Total: ₹ ${data.grandTotal}`, bold: true }),
+                new TextRun({
+                  text: `Grand Total: ₹ ${data.grandTotal}`,
+                  bold: true,
+                }),
               ],
             }),
 
@@ -251,9 +315,6 @@ export default function InvoicePage() {
 
   // };
 
-
-
-
   const exportToExcel = () => {
     const wsData = [
       ["TAX INVOICE"],
@@ -273,12 +334,12 @@ export default function InvoicePage() {
         it.hsn,
         it.qty,
         it.rate,
-        it.amount
+        it.amount,
       ]),
       [],
       ["Subtotal", form.subtotal],
       ["GST", form.gstAmount],
-      ["Grand Total", form.grandTotal]
+      ["Grand Total", form.grandTotal],
     ];
 
     const ws = XLSX.utils.aoa_to_sheet(wsData);
@@ -290,7 +351,7 @@ export default function InvoicePage() {
       { wch: 10 },
       { wch: 8 },
       { wch: 10 },
-      { wch: 12 }
+      { wch: 12 },
     ];
 
     const wb = XLSX.utils.book_new();
@@ -299,23 +360,30 @@ export default function InvoicePage() {
     XLSX.writeFile(wb, `Invoice_${form.invoiceNo}.xlsx`);
   };
 
-
   // Validation
   const validateForm = () => {
     const newErrors = {};
     if (!form.invoiceDate) newErrors.invoiceDate = "Invoice Date is required";
-    if (!form.paymentMode?.trim()) newErrors.paymentMode = "Payment Mode is required";
-    if (!form.motorVehicleNo?.trim()) newErrors.motorVehicleNo = "Motor Vehicle No is required";
-    if (!form.supplierName?.trim()) newErrors.supplierName = "Supplier Name is required";
-    if (!form.supplierAddress?.trim()) newErrors.supplierAddress = "Supplier Address is required";
-    if (!form.consigneeName?.trim()) newErrors.consigneeName = "Consignee Name is required";
-    if (!form.consigneeAddress?.trim()) newErrors.consigneeAddress = "Consignee Address is required";
+    if (!form.paymentMode?.trim())
+      newErrors.paymentMode = "Payment Mode is required";
+    if (!form.motorVehicleNo?.trim())
+      newErrors.motorVehicleNo = "Motor Vehicle No is required";
+    if (!form.supplierName?.trim())
+      newErrors.supplierName = "Supplier Name is required";
+    if (!form.supplierAddress?.trim())
+      newErrors.supplierAddress = "Supplier Address is required";
+    if (!form.consigneeName?.trim())
+      newErrors.consigneeName = "Consignee Name is required";
+    if (!form.consigneeAddress?.trim())
+      newErrors.consigneeAddress = "Consignee Address is required";
     if (!form.buyerName?.trim()) newErrors.buyerName = "Buyer Name is required";
-    if (!form.buyerAddress?.trim()) newErrors.buyerAddress = "Buyer Address is required";
+    if (!form.buyerAddress?.trim())
+      newErrors.buyerAddress = "Buyer Address is required";
 
     // Check items - at least one item with description
-    const hasValidItem = form.items.some(item => item.name?.trim());
-    if (!hasValidItem) newErrors.items = "At least one item with Description is required";
+    const hasValidItem = form.items.some((item) => item.name?.trim());
+    if (!hasValidItem)
+      newErrors.items = "At least one item with Description is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -330,16 +398,19 @@ export default function InvoicePage() {
   return (
     <Container maxWidth="lg" sx={{ mt: 3 }}>
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom>Invoice Builder</Typography>
+        <Typography variant="h5" gutterBottom>
+          Invoice Builder
+        </Typography>
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          Create professional invoices with GST calculations, item management, and export options.
+          Create professional invoices with GST calculations, item management,
+          and export options.
         </Typography>
 
         <Divider sx={{ mb: 2 }} />
 
         <InvoiceForm
           form={form}
-          productList={productList}
+          categories={categories}
           updateField={updateField}
           updateItem={updateItem}
           addItem={addItem}
@@ -349,22 +420,23 @@ export default function InvoicePage() {
 
         <Divider sx={{ marginY: 2 }} />
 
-        <Box className="print-area"> {/* .print-area CSS used to restrict printing */}
+        <Box className="print-area">
+          {" "}
+          {/* .print-area CSS used to restrict printing */}
           <InvoicePreview data={form} />
         </Box>
 
         <Box sx={{ display: "flex", gap: 2, marginTop: 2, flexWrap: "wrap" }}>
-          <Button variant="outlined" onClick={() => calculateTotals(form.items, form.gstPercent)}>
+          <Button
+            variant="outlined"
+            onClick={() => calculateTotals(form.items, form.gstPercent)}
+          >
             Recalculate
           </Button>
           <Button variant="contained" onClick={handlePrint}>
             Print / Save as PDF
           </Button>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={exportToExcel}
-          >
+          <Button variant="contained" color="success" onClick={exportToExcel}>
             Export Excel
           </Button>
           <Button variant="outlined" onClick={() => exportToWord(form)}>
@@ -389,7 +461,19 @@ export default function InvoicePage() {
                 buyerName: "",
                 buyerAddress: "",
                 gstPercent: 18,
-                items: [{ name: "", hsn: "", qty: "", rate: "", per: "", amount: "", estimatedArea: "", usage: "", category: "" }],
+                items: [
+                  {
+                    name: "",
+                    hsn: "",
+                    qty: "",
+                    rate: "",
+                    per: "",
+                    amount: "",
+                    estimatedArea: "",
+                    usage: "",
+                    category: "",
+                  },
+                ],
                 subtotal: "0.00",
                 gstAmount: "0.00",
                 grandTotal: "0.00",

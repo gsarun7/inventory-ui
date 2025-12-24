@@ -17,16 +17,23 @@ export default function ProductSelect({
     }
 
     fetchProductsByCategory(categoryId)
-      .then(res => setProducts(res.data));
+      .then(res => setProducts(res.data || []));
   }, [categoryId]);
 
   return (
     <Autocomplete
       options={products}
-      getOptionLabel={(opt) => opt.name}
-      value={products.find(p => p.id === value) || null}
-      onChange={(e, val) => onChange(val?.id || "")}
+      getOptionLabel={(opt) => opt?.name || ""}
+      value={products.find(p => String(p.id) === String(value)) || null}
+      isOptionEqualToValue={(opt, val) =>
+        String(opt.id) === String(val.id)
+      }
+      onChange={(e, newVal) => {
+        onChange(newVal?.id || "", newVal);
+      }}
+
       disabled={!categoryId}
+
       renderInput={(params) => (
         <TextField
           {...params}
