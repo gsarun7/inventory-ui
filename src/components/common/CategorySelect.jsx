@@ -7,14 +7,20 @@ export default function CategorySelect({ value, onChange, error }) {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    fetchCategories().then(res => setCategories(res.data));
+    fetchCategories().then((res) => setCategories(res.data));
   }, []);
-
+  console.log("Category select Component is rendering");
+  console.log({ categories });
+  console.log("Selected value:", value);
   return (
     <Autocomplete
       options={categories}
       getOptionLabel={(opt) => opt.name}
-      value={Array.isArray(categories) ? categories.find(c => c.id === value) || null : null}
+      value={
+        Array.isArray(categories)
+          ? categories.find((c) => c.id === value) || null
+          : null
+      }
       onChange={(e, val) => onChange(val?.id || "")}
       renderInput={(params) => (
         <TextField

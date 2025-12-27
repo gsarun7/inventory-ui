@@ -19,16 +19,27 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import CategorySelect from "../common/CategorySelect";
 import ProductSelect from "../common/ProductSelect";
+import { fetchCurrentStock } from "../../services/api.js";
 export default function InvoiceForm({
   form,
   categories,
   productList,
+  warehouses,
   updateField,
   updateItem,
   addItem,
   removeItem,
   errors = {},
 }) {
+  console.log("Invoice form Component is rendering");
+  console.log({ productList, categories, warehouses });
+  console.log(
+    "Selected value:",
+    form.warehouse,
+    form.items.itemName,
+    form.items.categoryId
+  );
+
   return (
     <div>
       <Grid container spacing={2}>
@@ -171,6 +182,20 @@ export default function InvoiceForm({
             helperText={errors.buyerAddress}
           />
         </Grid>
+        <Grid>
+          <InputLabel>Warehouse</InputLabel>
+          <Select
+            value={form.warehouse}
+            label="Warehouse"
+            onChange={(e) => updateField("warehouse", e.target.value)}
+          >
+            {warehouses.map((w) => (
+              <MenuItem key={w.id} value={w.id}>
+                {w.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </Grid>
       </Grid>
 
       {/* Items table */}
@@ -253,7 +278,7 @@ export default function InvoiceForm({
                     categoryId={item.categoryId}
                     value={item.itemId}
                     onChange={async (productId, product) => {
-                      if (!product) {
+                      if (product === null) {
                         updateItem(idx, {
                           itemId: productId,
                           itemName: product.name,
@@ -265,6 +290,11 @@ export default function InvoiceForm({
                       //   productId,
                       //   form.warehouse
                       // );
+
+                      const res = await fetchCurrentStock(
+                        productId,
+                        form.warehouse
+                      );
 
                       updateItem(idx, {
                         itemId: productId,

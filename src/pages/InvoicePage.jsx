@@ -21,6 +21,7 @@ import { saveAs } from "file-saver";
 import InvoiceForm from "../components/InvoiceForm/InvoiceForm";
 import InvoicePreview from "../components/InvoiceForm/InvoicePreview";
 import "../styles/invoice.css"; // print styles + layout
+import apiClient from "../services/apiClient";
 
 export default function InvoicePage() {
   // central state (single source of truth)
@@ -31,6 +32,7 @@ export default function InvoicePage() {
     ewaybillno: "eway1234567890",
     destination: "BHADRAVATHI",
     motorVehicleNo: "KA-03-MN-1234",
+    warehouse: "",
     deleiveryDate: new Date().toISOString().slice(0, 10),
     supplierName: "NITTUR GRANITE & TILES - JD KATTE SHOWROOM",
     supplierAddress: "SY No: XXXX, GKHPS KADADAKATTE, BHADRAVATHI",
@@ -39,6 +41,9 @@ export default function InvoicePage() {
     buyerName: "RAMYA",
     buyerAddress: "JAMPAMPURA, INGADHALLI",
     gstPercent: 18,
+    gstNo: "29AAGFN1234Q1Z5",
+    phone: "9988776655",
+
     items: [
       // initial one row
       {
@@ -63,9 +68,16 @@ export default function InvoicePage() {
   const [errors, setErrors] = useState({});
   const [categories, setCategories] = useState([]);
   const [productList, setProductList] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   // products sample for autocomplete
+  /* ---------------- Load Masters ---------------- */
 
+  useEffect(() => {
+    apiClient.get("/api/categories").then((r) => setCategories(r.data));
+    apiClient.get("/api/warehouses").then((r) => setWarehouses(r.data));
+  }, []);
   // calculate totals whenever items or gstAmount change
   useEffect(() => {
     calculateTotals(form.items);
@@ -394,6 +406,43 @@ export default function InvoicePage() {
     if (!validateForm()) return;
     window.print();
   };
+  const handleSubmitInvoice = async () => {
+    try {
+      setIsSaving(true);
+      const payload = {
+        invoiceNo: `INV-${Date.now()}`, // 🔹 hard-coded
+        invoiceDate: new Date().toISOString(), // 🔹 now
+        warehouseId: 1 || 2, // 🔹 temp default
+        customerName: form.buyerName || "Walk-in Customer",
+        customerPhone: form.phone || "9999999999",
+        customerAddress: form.buyerAddress || "",
+        customerGstNo: form.gstNo || "",
+
+        items: form.items.map((i) => ({
+          productId: 1,
+          unitId: 1, // 🔹 default unit
+          quantity: i.qty,
+          rate: i.rate,
+        })),
+      };
+
+      await apiClient.post("/api/sales", payload);
+      setIsSaving(false);
+      alert("Invoice saved successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save stock adjustment");
+    }
+  };
+
+  console.log("Invoice page Component is rendering");
+  console.log({ productList, categories, warehouses });
+  console.log(
+    "Selected value:",
+    form.warehouse,
+    form.items.itemName,
+    form.items.categoryId
+  );
 
   return (
     <Container maxWidth="lg" sx={{ mt: 3 }}>
@@ -411,6 +460,7 @@ export default function InvoicePage() {
         <InvoiceForm
           form={form}
           categories={categories}
+          warehouses={warehouses}
           updateField={updateField}
           updateItem={updateItem}
           addItem={addItem}
@@ -432,6 +482,13 @@ export default function InvoicePage() {
             onClick={() => calculateTotals(form.items, form.gstPercent)}
           >
             Recalculate
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSubmitInvoice}
+            //disabled={isSaving || items.length === 0}
+          >
+            Save Invoice
           </Button>
           <Button variant="contained" onClick={handlePrint}>
             Print / Save as PDF
@@ -460,6 +517,7 @@ export default function InvoicePage() {
                 consigneeAddress: "",
                 buyerName: "",
                 buyerAddress: "",
+                warehouse: "",
                 gstPercent: 18,
                 items: [
                   {
