@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Box, Container, Paper, Typography, Divider, Button } from "@mui/material";
+import {
+  Box,
+  Container,
+  Paper,
+  Typography,
+  Divider,
+  Button,
+} from "@mui/material";
 import ReturnForm from "../components/Returns/ReturnForm";
 import ReturnPreview from "../components/Returns/ReturnPreview";
 
@@ -9,19 +16,16 @@ import ReturnPreview from "../components/Returns/ReturnPreview";
  */
 import apiClient from "../services/apiClient";
 
-
 export default function ReturnPage() {
-
   const [categories, setCategories] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [soldItems, setSoldItems] = useState([]);
-
-
+  const [isSaving, setIsSaving] = useState(false);
   const [form, setForm] = useState({
     returnId: "",
     returnDate: new Date().toISOString().slice(0, 10),
-    originalInvoiceNo: "",
+    originalInvoiceNo: "INV-1766892135006",
     originalInvoiceDate: "",
     customerName: "",
     customerPhone: "",
@@ -37,18 +41,18 @@ export default function ReturnPage() {
         categoryId: "",
         itemId: "",
         itemName: "",
-        soldQty: 0,
+        soldQty: 2,
         returnQty: 0,
-        unitPrice: 0,
+        unitPrice: 10,
         totalPrice: 0,
-        condition: "GOOD"
-      }
-    ]
+        condition: "GOOD",
+      },
+    ],
   });
 
   useEffect(() => {
-    apiClient.get("/api/categories").then(r => setCategories(r.data));
-    apiClient.get("/api/warehouses").then(r => setWarehouses(r.data));
+    apiClient.get("/api/categories").then((r) => setCategories(r.data));
+    apiClient.get("/api/warehouses").then((r) => setWarehouses(r.data));
     //apiClient.get("/api/sales/invoices").then(r => setInvoices(r.data));
   }, []);
   // Sample sold items for autocomplete - replace with actual sales API later
@@ -58,9 +62,8 @@ export default function ReturnPage() {
     if (!form.originalInvoiceNo) return;
 
     apiClient
-      .get(`/api/sales/invoices/${form.originalInvoiceNo}/items`)
-      .then(r => setSoldItems(r.data));
-
+      .get(`/api/sales_invoices/${form.originalInvoiceNo}/items`)
+      .then((r) => setSoldItems(r.data));
   }, [form.originalInvoiceNo]);
 
   // Update field generic
@@ -87,13 +90,15 @@ export default function ReturnPage() {
   // Auto-fill customer details when invoice is selected
   useEffect(() => {
     if (form.originalInvoiceNo) {
-      const selectedInvoice = invoices.find(inv => inv.id === form.originalInvoiceNo);
+      const selectedInvoice = invoices.find(
+        (inv) => inv.id === form.originalInvoiceNo
+      );
       if (selectedInvoice) {
         setForm((p) => ({
           ...p,
           originalInvoiceDate: selectedInvoice.date,
           customerName: selectedInvoice.customer,
-          refundAmount: selectedInvoice.total.toFixed(2)
+          refundAmount: selectedInvoice.total.toFixed(2),
         }));
       }
     }
@@ -103,12 +108,12 @@ export default function ReturnPage() {
   // Recalculate total refund amount whenever items change
   useEffect(() => {
     const totalRefund = form.items.reduce((sum, item) => {
-      return sum + (parseFloat(item.totalPrice || 0));
+      return sum + parseFloat(item.totalPrice || 0);
     }, 0);
 
     setForm((p) => ({
       ...p,
-      refundAmount: totalRefund.toFixed(2)
+      refundAmount: totalRefund.toFixed(2),
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.items]);
@@ -116,7 +121,19 @@ export default function ReturnPage() {
   const addItemRow = () => {
     setForm((p) => ({
       ...p,
-      items: [...p.items, { itemId: "", itemName: "", soldQty: "", returnQty: "", unitPrice: "", totalPrice: "", condition: "GOOD", category: "" }]
+      items: [
+        ...p.items,
+        {
+          itemId: "",
+          itemName: "",
+          soldQty: "",
+          returnQty: "",
+          unitPrice: "",
+          totalPrice: "",
+          condition: "GOOD",
+          category: "",
+        },
+      ],
     }));
   };
 
@@ -131,12 +148,29 @@ export default function ReturnPage() {
   };
 
   // Handle save return
-  const handleSave = () => {
-    // Here you would typically send the data to your backend API
-    console.log("Saving product return:", form);
-    alert("Product return processed successfully! (Implement API call)");
-  };
 
+  const handleSubmitInvoice = async () => {
+    try {
+      setIsSaving(true);
+      const payload = {
+        salesInvoiceId: 6, // 🔹 hard-coded
+        salesInvoiceDate: new Date().toISOString(), // 🔹 now
+        warehouseId: 1 || 2, // 🔹 temp default
+
+        items: form.items.map((i) => ({
+          productId: 1,
+          quantity: i.returnQty,
+        })),
+      };
+
+      await apiClient.post("/api/sales-return", payload);
+      setIsSaving(false);
+      alert("Sale return saved successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save stock adjustment");
+    }
+  };
   return (
     <Container maxWidth="lg" sx={{ mt: 3 }}>
       {/* Print CSS is injected here to keep everything self-contained */}
@@ -152,9 +186,12 @@ export default function ReturnPage() {
       `}</style>
 
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom>Product Return Processing</Typography>
+        <Typography variant="h5" gutterBottom>
+          Product Return Processing
+        </Typography>
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          Process customer returns, restock inventory, and issue refunds. Live preview below updates instantly.
+          Process customer returns, restock inventory, and issue refunds. Live
+          preview below updates instantly.
         </Typography>
 
         <Divider sx={{ mb: 2 }} />
@@ -172,11 +209,17 @@ export default function ReturnPage() {
         />
 
         <Box className="return-preview-root">
-          <Typography variant="h6" sx={{ mt: 2 }}>Return Voucher Preview</Typography>
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Return Voucher Preview
+          </Typography>
           <ReturnPreview data={form} className="printable-area" />
 
           <Box sx={{ mt: 2, display: "flex", gap: 2, flexWrap: "wrap" }}>
-            <Button variant="outlined" onClick={handleSave}>
+            <Button
+              variant="contained"
+              onClick={handleSubmitInvoice}
+              //disabled={isSaving || items.length === 0}
+            >
               Process Return
             </Button>
 
@@ -201,7 +244,18 @@ export default function ReturnPage() {
                   refundMethod: "CASH",
                   refundAmount: "0.00",
                   notes: "",
-                  items: [{ itemId: "", itemName: "", soldQty: "", returnQty: "", unitPrice: "", totalPrice: "", condition: "GOOD", category: "" }]
+                  items: [
+                    {
+                      itemId: "",
+                      itemName: "",
+                      soldQty: "",
+                      returnQty: "",
+                      unitPrice: "",
+                      totalPrice: "",
+                      condition: "GOOD",
+                      category: "",
+                    },
+                  ],
                 });
               }}
             >
