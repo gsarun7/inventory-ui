@@ -2,8 +2,8 @@
 import axios from "axios";
 import apiClient from "./apiClient";
 
-//const API_URL = "http://localhost:8080/api";
-const API_URL = "https://ngtbackend-e4ab.onrender.com/api";
+const API_URL = "http://localhost:8080/api";
+//const API_URL = "https://ngtbackend-e4ab.onrender.com/api";
 
 export const getProducts = async () => {
   const res = await fetch(`${API_URL}/items`);

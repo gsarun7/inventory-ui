@@ -25,8 +25,9 @@ import apiClient from "../services/apiClient";
 
 export default function InvoicePage() {
   // central state (single source of truth)
+  // Update the form state initialization
   const [form, setForm] = useState({
-    invoiceNo: "868",
+    invoiceNo: "", // ✅ Empty initially, will be set after save
     invoiceDate: new Date().toISOString().slice(0, 10),
     paymentMode: "CASH",
     ewaybillno: "eway1234567890",
@@ -34,8 +35,8 @@ export default function InvoicePage() {
     motorVehicleNo: "KA-03-MN-1234",
     warehouse: "",
     deleiveryDate: new Date().toISOString().slice(0, 10),
-    supplierName: "NITTUR GRANITE & TILES - JD KATTE SHOWROOM",
-    supplierAddress: "SY No: XXXX, GKHPS KADADAKATTE, BHADRAVATHI",
+    supplierName: "NITTUR GRANITE & TILES - E SHOWROOM",
+    supplierAddress: "SY No: XXXX, GKHPS ",
     consigneeName: "RAMYA",
     consigneeAddress: "JAMPAMPURA, INGADHALLI",
     buyerName: "RAMYA",
@@ -43,9 +44,7 @@ export default function InvoicePage() {
     gstPercent: 18,
     gstNo: "29AAGFN1234Q1Z5",
     phone: "9988776655",
-
     items: [
-      // initial one row
       {
         itemId: "",
         itemName: "",
@@ -406,43 +405,48 @@ export default function InvoicePage() {
     if (!validateForm()) return;
     window.print();
   };
+  // Update handleSubmitInvoice
   const handleSubmitInvoice = async () => {
     try {
       setIsSaving(true);
+
       const payload = {
-        invoiceNo: `INV-${Date.now()}`, // 🔹 hard-coded
-        invoiceDate: new Date().toISOString(), // 🔹 now
-        warehouseId: 1 || 2, // 🔹 temp default
+        // ❌ Don't send invoiceNo - backend will generate it
+        invoiceDate: form.invoiceDate,
+        warehouseId: parseInt(form.warehouse),
         customerName: form.buyerName || "Walk-in Customer",
         customerPhone: form.phone || "9999999999",
         customerAddress: form.buyerAddress || "",
         customerGstNo: form.gstNo || "",
-
+        paymentMode: form.paymentMode,
         items: form.items.map((i) => ({
-          productId: 1,
-          unitId: 1, // 🔹 default unit
-          quantity: i.qty,
-          rate: i.rate,
+          productId: parseInt(i.itemId),
+          unitId: 1,
+          quantity: parseFloat(i.qty),
+          rate: parseFloat(i.rate),
+          amount: parseFloat(i.amount),
         })),
+        totalAmount: parseFloat(form.grandTotal),
       };
 
-      await apiClient.post("/api/sales", payload);
+      console.log("📤 Sending payload:", payload);
+
+      const response = await apiClient.post("/api/sales", payload);
+
+      // ✅ Update form with generated invoice number
+      setForm((prev) => ({
+        ...prev,
+        invoiceNo: response.data.invoiceNo, // Backend returns generated number
+      }));
+
       setIsSaving(false);
-      alert("Invoice saved successfully!");
+      alert(`✅ Invoice ${response.data.invoiceNo} created successfully!`);
     } catch (err) {
       console.error(err);
-      alert("Failed to save stock adjustment");
+      setIsSaving(false);
+      alert("Failed to save invoice");
     }
   };
-
-  console.log("Invoice page Component is rendering");
-  console.log({ productList, categories, warehouses });
-  console.log(
-    "Selected value:",
-    form.warehouse,
-    form.items.itemName,
-    form.items.categoryId
-  );
 
   return (
     <Container maxWidth="lg" sx={{ mt: 3 }}>

@@ -15,12 +15,19 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  IconButton
+  IconButton,
+  InputAdornment,
+  Tooltip,
+  Chip,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CategorySelect from "../common/CategorySelect";
 import ProductSelect from "../common/ProductSelect";
+import ClearIcon from "@mui/icons-material/Clear";
 
 export default function StockAdjustmentForm({
   form,
@@ -28,24 +35,69 @@ export default function StockAdjustmentForm({
   updateField,
   updateItem,
   addItemRow,
-  removeItemRow
+  removeItemRow,
 }) {
+  // Copy adjustment ID to clipboard
+  const copyAdjustmentId = () => {
+    if (form.adjustmentId) {
+      navigator.clipboard.writeText(form.adjustmentId);
+      alert("Adjustment ID copied to clipboard!");
+    }
+  };
+
   return (
     <Box>
-
       {/* ================= Header ================= */}
       <Typography variant="h6" gutterBottom>
         Adjustment Details
       </Typography>
 
       <Grid container spacing={2} mb={3}>
+        {/* ✅ Smart Adjustment ID Field */}
         <Grid item xs={12} md={3}>
           <TextField
             fullWidth
             label="Adjustment ID"
-            value={form.adjustmentId}
-            onChange={(e) =>
-              updateField("adjustmentId", e.target.value)
+            value={form.adjustmentId || ""}
+            placeholder={!form.adjustmentId ? "Auto-generated on save" : ""}
+            InputProps={{
+              readOnly: true,
+              style: {
+                backgroundColor: form.adjustmentId ? "#e3f2fd" : "#f5f5f5",
+                fontWeight: form.adjustmentId ? "bold" : "normal",
+                color: form.adjustmentId ? "#1976d2" : "#666",
+                fontSize: form.adjustmentId ? "1.05rem" : "1rem",
+              },
+              startAdornment: (
+                <InputAdornment position="start">
+                  {form.adjustmentId ? (
+                    <CheckCircleIcon color="success" fontSize="small" />
+                  ) : (
+                    <AutorenewIcon color="disabled" fontSize="small" />
+                  )}
+                </InputAdornment>
+              ),
+              endAdornment: form.adjustmentId && (
+                <InputAdornment position="end">
+                  <Tooltip title="Copy adjustment ID">
+                    <IconButton size="small" onClick={copyAdjustmentId}>
+                      <ContentCopyIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Chip
+                    label="Auto"
+                    size="small"
+                    color="primary"
+                    variant="outlined"
+                    sx={{ ml: 1, height: 20 }}
+                  />
+                </InputAdornment>
+              ),
+            }}
+            helperText={
+              form.adjustmentId
+                ? "✅ Adjustment ID generated"
+                : "✨ Will be auto-generated when you save"
             }
           />
         </Grid>
@@ -57,9 +109,7 @@ export default function StockAdjustmentForm({
             label="Adjustment Date"
             InputLabelProps={{ shrink: true }}
             value={form.adjustmentDate}
-            onChange={(e) =>
-              updateField("adjustmentDate", e.target.value)
-            }
+            onChange={(e) => updateField("adjustmentDate", e.target.value)}
           />
         </Grid>
 
@@ -69,9 +119,7 @@ export default function StockAdjustmentForm({
             <Select
               value={form.adjustmentType}
               label="Adjustment Type"
-              onChange={(e) =>
-                updateField("adjustmentType", e.target.value)
-              }
+              onChange={(e) => updateField("adjustmentType", e.target.value)}
             >
               <MenuItem value="ADD">Add (+)</MenuItem>
               <MenuItem value="REDUCE">Reduce (-)</MenuItem>
@@ -81,15 +129,29 @@ export default function StockAdjustmentForm({
 
         <Grid item xs={12} md={3}>
           <FormControl fullWidth>
-            <InputLabel>Warehouse</InputLabel>
+            <InputLabel id="warehouse-label">Warehouse</InputLabel>
             <Select
-              value={form.warehouse}
+              labelId="warehouse-label"
               label="Warehouse"
-              onChange={(e) =>
-                updateField("warehouse", e.target.value)
+              value={form.warehouse || ""}
+              onChange={(e) => updateField("warehouse", e.target.value)}
+              endAdornment={
+                <IconButton
+                  size="small"
+                  sx={{
+                    marginRight: 3,
+                    visibility: form.warehouse ? "visible" : "hidden",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    updateField("warehouse", "");
+                  }}
+                >
+                  <ClearIcon fontSize="small" />
+                </IconButton>
               }
             >
-              {warehouses.map(w => (
+              {warehouses.map((w) => (
                 <MenuItem key={w.id} value={w.id}>
                   {w.name}
                 </MenuItem>
@@ -103,9 +165,7 @@ export default function StockAdjustmentForm({
             fullWidth
             label="Reference / Document No"
             value={form.reference}
-            onChange={(e) =>
-              updateField("reference", e.target.value)
-            }
+            onChange={(e) => updateField("reference", e.target.value)}
           />
         </Grid>
 
@@ -114,9 +174,7 @@ export default function StockAdjustmentForm({
             fullWidth
             label="Notes"
             value={form.notes}
-            onChange={(e) =>
-              updateField("notes", e.target.value)
-            }
+            onChange={(e) => updateField("notes", e.target.value)}
             multiline
             rows={2}
           />
@@ -151,7 +209,6 @@ export default function StockAdjustmentForm({
                   onChange={(newCategoryId) => {
                     if (newCategoryId !== item.categoryId) {
                       updateItem(index, "categoryId", newCategoryId);
-
                     }
                   }}
                 />
@@ -168,22 +225,24 @@ export default function StockAdjustmentForm({
                         itemId: "",
                         itemName: "",
                         currentStock: "0",
-                        finalStock: ""
+                        finalStock: "",
                       });
                       return;
                     }
 
-               const res = await fetchCurrentStock(productId, form.warehouse);
+                    const res = await fetchCurrentStock(
+                      productId,
+                      form.warehouse
+                    );
 
                     updateItem(index, {
                       itemId: productId,
                       itemName: product.name,
                       currentStock: res.data.toString(),
                       adjustmentQty: "",
-                      finalStock: res.data.toString()
+                      finalStock: res.data.toString(),
                     });
                   }}
-
                 />
               </TableCell>
 
@@ -213,9 +272,7 @@ export default function StockAdjustmentForm({
                 <TextField
                   size="small"
                   value={item.reason}
-                  onChange={(e) =>
-                    updateItem(index, "reason", e.target.value)
-                  }
+                  onChange={(e) => updateItem(index, "reason", e.target.value)}
                 />
               </TableCell>
 
@@ -244,11 +301,7 @@ export default function StockAdjustmentForm({
       </Table>
 
       <Box mt={2}>
-        <Button
-          variant="outlined"
-          startIcon={<AddIcon />}
-          onClick={addItemRow}
-        >
+        <Button variant="outlined" startIcon={<AddIcon />} onClick={addItemRow}>
           Add Item
         </Button>
       </Box>
